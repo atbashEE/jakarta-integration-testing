@@ -19,7 +19,7 @@ import be.atbash.testing.integration.test.AbstractContainerIntegrationTest;
 
 public enum SupportedRuntime {
 
-    PAYARA_MICRO, OPEN_LIBERTY;
+    PAYARA_MICRO, OPEN_LIBERTY, WILDFLY;
 
     public static SupportedRuntime determineRuntime(Class<? extends AbstractContainerIntegrationTest> clazz) {
         SupportedRuntime result = null;
@@ -28,6 +28,9 @@ public enum SupportedRuntime {
         }
         if (clazz.getSimpleName().startsWith("OpenLiberty")) {
             result = OPEN_LIBERTY;
+        }
+        if (clazz.getSimpleName().startsWith("Wildfly")) {
+            result = WILDFLY;
         }
         return result;
     }

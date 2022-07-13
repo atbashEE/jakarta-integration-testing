@@ -49,8 +49,13 @@ public class ContainerIntegrationTestExtension implements BeforeAllCallback, Aft
     public void postProcessTestInstance(Object testInstance, ExtensionContext context) throws Exception {
         AbstractIntegrationContainer<?> container = controller.getApplicationTestContainer();
 
-
-        URI baseURI = URI.create(String.format("http://localhost:%s", container.getMappedPort(metaData.getPort())));
+        String root = "";
+        if (metaData.getSupportedRuntime() == SupportedRuntime.WILDFLY) {
+            // putting apps in /deployments directory of Wildfly uses the file name as root.
+            // TODO Check if this is a problem for cross runtime compatibility. (for example when having multiple microservices)
+            root = "/app";
+        }
+        URI baseURI = URI.create(String.format("http://localhost:%s%s", container.getMappedPort(metaData.getPort()), root));
 
         for (Field field : metaData.getRestClientFields()) {
             Object restClient = RestClientBuilder.newBuilder().  // From MicroProfile Rest Client

@@ -32,6 +32,9 @@ public class ContainerFactory {
             case OPEN_LIBERTY:
                 result = new OpenLibertyContainer(metaData.getWarFileLocation(), metaData.isDebug());
                 break;
+            case WILDFLY:
+                result = new WildflyContainer(metaData.getWarFileLocation(), metaData.isDebug());
+                break;
             default:
                 throw new IllegalArgumentException(String.format("Unsupported value %s of SupportedRuntime", metaData.getSupportedRuntime()));
         }

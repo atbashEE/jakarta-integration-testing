@@ -103,11 +103,11 @@ public class ContainerAdapterMetaData {
         switch (supportedRuntime) {
 
             case PAYARA_MICRO:
+            case WILDFLY:
                 port = 8080;
                 break;
             case OPEN_LIBERTY:
                 port = 9080;
-
                 break;
         }
         return port;
