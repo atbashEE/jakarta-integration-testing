@@ -53,7 +53,7 @@ public class ContainerIntegrationTestExtension implements BeforeAllCallback, Aft
         if (metaData.getSupportedRuntime() == SupportedRuntime.WILDFLY) {
             // putting apps in /deployments directory of Wildfly uses the file name as root.
             // TODO Check if this is a problem for cross runtime compatibility. (for example when having multiple microservices)
-            root = "/app";
+            root = "/test";
         }
         URI baseURI = URI.create(String.format("http://localhost:%s%s", container.getMappedPort(metaData.getPort()), root));
 

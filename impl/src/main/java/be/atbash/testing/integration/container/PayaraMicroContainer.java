@@ -15,28 +15,23 @@
  */
 package be.atbash.testing.integration.container;
 
+import be.atbash.testing.integration.jupiter.SupportedRuntime;
 import org.testcontainers.containers.wait.strategy.Wait;
-import org.testcontainers.utility.DockerImageName;
-import org.testcontainers.utility.MountableFile;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 
 /**
  * Specialised Container for Payara Micro.
- *
  */
 public class PayaraMicroContainer extends AbstractIntegrationContainer<PayaraMicroContainer> {
 
     public PayaraMicroContainer(String warFileLocation, boolean debug) {
-        super(DockerImageName.parse("payara/micro:5.2022.2-jdk11"));
+        super(DockerImageProcessor.getImage(SupportedRuntime.PAYARA_MICRO, warFileLocation));
         withExposedPorts(8080); // FIXME Reuse logic from ContainerAdapterMetaData.determinePort and/or kept within ContainerAdapterMetaData
 
-        withCopyFileToContainer(MountableFile.forHostPath(warFileLocation, 0777), "/opt/payara/deployments/app.war");
         // Health point of Payara Micro based on MicroProfile Health
         waitingFor(Wait.forHttp("/health"));
-        withCommand("--deploy /opt/payara/deployments/app.war --noCluster --contextRoot /");
-        // Deploy app, no clustering = faster and define context root.
 
         // FIXME duplicated with the OpenLiberty Container.
         if (debug) {

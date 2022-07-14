@@ -15,9 +15,8 @@
  */
 package be.atbash.testing.integration.container;
 
+import be.atbash.testing.integration.jupiter.SupportedRuntime;
 import org.testcontainers.containers.wait.strategy.Wait;
-import org.testcontainers.utility.DockerImageName;
-import org.testcontainers.utility.MountableFile;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
@@ -28,14 +27,13 @@ import java.time.temporal.ChronoUnit;
 public class WildflyContainer extends AbstractIntegrationContainer<WildflyContainer> {
 
     public WildflyContainer(String warFileLocation, boolean debug) {
-        super(DockerImageName.parse("quay.io/wildfly/wildfly:26.1.1.Final"));
+        super(DockerImageProcessor.getImage(SupportedRuntime.WILDFLY, warFileLocation));
         withExposedPorts(8080, 9990); // FIXME Reuse logic from ContainerAdapterMetaData.determinePort and/or kept within ContainerAdapterMetaData
         // port 9990 for the management where health is
 
-        withCopyToContainer(MountableFile.forHostPath(warFileLocation, 0777), "/opt/jboss/wildfly/standalone/deployments/app.war");
         // Health point
         //waitingFor(Wait.forHttp("/health").forPort(9990));  // FIXME Test out why this isn't working
-        waitingFor(Wait.forLogMessage(".*WFLYSRV0010: Deployed \"app.war\".*", 1));
+        waitingFor(Wait.forLogMessage(".*WFLYSRV0010: Deployed \"test.war\".*", 1));
 
         // FIXME duplicated with the OpenLiberty Container.
         if (debug) {

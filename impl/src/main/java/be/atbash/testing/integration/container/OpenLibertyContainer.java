@@ -15,6 +15,7 @@
  */
 package be.atbash.testing.integration.container;
 
+import be.atbash.testing.integration.jupiter.SupportedRuntime;
 import org.testcontainers.containers.wait.strategy.Wait;
 
 import java.time.Duration;
@@ -27,7 +28,7 @@ public class OpenLibertyContainer extends AbstractIntegrationContainer<OpenLiber
 
     public OpenLibertyContainer(String warFileLocation, boolean debug) {
 
-        super(DockerImageProcessor.getImage(warFileLocation));
+        super(DockerImageProcessor.getImage(SupportedRuntime.OPEN_LIBERTY, warFileLocation));
         withExposedPorts(9080);  // FIXME Reuse logic from ContainerAdapterMetaData.determinePort and/or kept within ContainerAdapterMetaData
 
         // Health point of Payara Micro based on MicroProfile Health
