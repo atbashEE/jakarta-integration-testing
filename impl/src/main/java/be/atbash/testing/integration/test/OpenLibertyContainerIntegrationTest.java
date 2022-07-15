@@ -15,18 +15,6 @@
  */
 package be.atbash.testing.integration.test;
 
-import be.atbash.testing.integration.container.OpenLibertyContainer;
-import be.atbash.testing.integration.container.PayaraMicroContainer;
-import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.junit.jupiter.Container;
-
 public class OpenLibertyContainerIntegrationTest extends AbstractContainerIntegrationTest {
 
-    @Container
-    public static OpenLibertyContainer openLibertyContainer;
-
-    @Override
-    void setContainer(GenericContainer<?> container) {
-        openLibertyContainer = (OpenLibertyContainer) container;
-    }
 }

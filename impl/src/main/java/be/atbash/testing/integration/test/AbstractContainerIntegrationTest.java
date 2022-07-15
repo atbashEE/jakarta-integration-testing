@@ -16,19 +16,17 @@
 package be.atbash.testing.integration.test;
 
 
+import be.atbash.testing.integration.container.AbstractIntegrationContainer;
 import org.junit.jupiter.api.extension.RegisterExtension;
-import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.junit.jupiter.Container;
 
 /**
  * Abstract class for the Integration test written by developer.
  */
 public abstract class AbstractContainerIntegrationTest {
 
-    /*
-     * FIXME This is not used as we set the container directly? So do we remove this
-     *  or change the logic of assigning the container instance in the test?
-     */
-    abstract void setContainer(GenericContainer<?> container);
+    @Container
+    public static AbstractIntegrationContainer testContainer;
 
     @RegisterExtension
     private final ShowLogWhenFailedExceptionHandler showLogExceptionHandler = new ShowLogWhenFailedExceptionHandler();

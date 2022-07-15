@@ -28,11 +28,6 @@ import java.util.concurrent.Future;
  */
 public abstract class AbstractIntegrationContainer<SELF extends AbstractIntegrationContainer<SELF>> extends GenericContainer<SELF> {
 
-
-    public AbstractIntegrationContainer(DockerImageName dockerImageName) {
-        super(dockerImageName);
-    }
-
     public AbstractIntegrationContainer(Future<String> image) {
         super(image);
     }

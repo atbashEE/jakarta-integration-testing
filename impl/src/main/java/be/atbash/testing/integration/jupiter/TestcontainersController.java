@@ -57,7 +57,6 @@ public class TestcontainersController {
 
     protected Set<GenericContainer<?>> discoverContainers(Class<?> clazz) {
 
-
         Set<GenericContainer<?>> discoveredContainers = new HashSet<>();
         for (Field containerField : AnnotationSupport.findAnnotatedFields(clazz, Container.class)) {
             if (!Modifier.isPublic(containerField.getModifiers())) {
@@ -72,19 +71,16 @@ public class TestcontainersController {
             }
             try {
                 boolean generic = true;
-                if (AbstractIntegrationContainer.class.isAssignableFrom( containerField.getType())) {
+                if (AbstractIntegrationContainer.class.isAssignableFrom(containerField.getType())) {
                     runtimeContainerField = containerField;
-                    runtimeContainerField.setAccessible(true);
                     generic = false;
                 }
-
 
                 if (generic) {
                     // Some other container the developer uses in the test.
                     GenericContainer<?> startableContainer = (GenericContainer<?>) containerField.get(null);
                     startableContainer.setNetwork(Network.SHARED);
                     discoveredContainers.add(startableContainer);
-
 
                 }
             } catch (IllegalArgumentException | IllegalAccessException e) {
@@ -108,7 +104,6 @@ public class TestcontainersController {
         try {
             runtimeContainerField.set(null, applicationTestContainer);
             containers.add(applicationTestContainer);
-
 
         } catch (IllegalAccessException e) {
             Assertions.fail(e.getMessage());
@@ -138,7 +133,7 @@ public class TestcontainersController {
 
 
     public void stop() throws IllegalAccessException {
-        // Stop all Containers in the AfterAll. Some containers can already be stopped by the AfterEach.
+        // Stop all Containers in the AfterAll phase. Some containers can already be stopped by the AfterEach.
         long start = System.currentTimeMillis();
         containers.parallelStream().forEach(GenericContainer::stop);
         LOGGER.info("All containers stopped in " + (System.currentTimeMillis() - start) + "ms");

@@ -15,17 +15,6 @@
  */
 package be.atbash.testing.integration.test;
 
-import be.atbash.testing.integration.container.PayaraMicroContainer;
-import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.junit.jupiter.Container;
-
 public class PayaraMicroContainerIntegrationTest extends AbstractContainerIntegrationTest {
 
-    @Container
-    public static PayaraMicroContainer payaraMicro;
-
-    @Override
-    void setContainer(GenericContainer<?> container) {
-        payaraMicro = (PayaraMicroContainer) container;
-    }
 }

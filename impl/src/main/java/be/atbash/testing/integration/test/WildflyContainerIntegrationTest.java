@@ -15,17 +15,6 @@
  */
 package be.atbash.testing.integration.test;
 
-import be.atbash.testing.integration.container.WildflyContainer;
-import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.junit.jupiter.Container;
-
 public class WildflyContainerIntegrationTest extends AbstractContainerIntegrationTest {
 
-    @Container
-    public static WildflyContainer wildflyContainer;
-
-    @Override
-    void setContainer(GenericContainer<?> container) {
-        wildflyContainer = (WildflyContainer) container;
-    }
 }
