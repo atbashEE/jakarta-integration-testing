@@ -16,14 +16,15 @@
 package be.atbash.test.integration.example.hello;
 
 import be.atbash.testing.integration.jupiter.ContainerIntegrationTest;
-import be.atbash.testing.integration.test.WildflyContainerIntegrationTest;
+import be.atbash.testing.integration.jupiter.SupportedRuntime;
+import be.atbash.testing.integration.test.AbstractContainerIntegrationTest;
 import org.assertj.core.api.Assertions;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.junit.jupiter.api.Test;
 
 
-@ContainerIntegrationTest
-public class HelloWildflyIT extends WildflyContainerIntegrationTest {
+@ContainerIntegrationTest(runtime = SupportedRuntime.WILDFLY)
+public class HelloWildflyIT extends AbstractContainerIntegrationTest {
     // Should be public and not the JUnit 5 preferred scope package.
 
     @RestClient

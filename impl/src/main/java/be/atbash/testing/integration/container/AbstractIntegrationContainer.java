@@ -16,7 +16,6 @@
 package be.atbash.testing.integration.container;
 
 import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.utility.DockerImageName;
 
 import java.util.concurrent.Future;
 

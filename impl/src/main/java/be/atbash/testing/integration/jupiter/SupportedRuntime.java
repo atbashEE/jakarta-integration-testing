@@ -15,23 +15,16 @@
  */
 package be.atbash.testing.integration.jupiter;
 
-import be.atbash.testing.integration.test.AbstractContainerIntegrationTest;
+import java.util.Arrays;
 
 public enum SupportedRuntime {
 
-    PAYARA_MICRO, OPEN_LIBERTY, WILDFLY;
+    DEFAULT, PAYARA_MICRO, OPEN_LIBERTY, WILDFLY;
 
-    public static SupportedRuntime determineRuntime(Class<? extends AbstractContainerIntegrationTest> clazz) {
-        SupportedRuntime result = null;
-        if (clazz.getSimpleName().startsWith("PayaraMicro")) {
-            result = PAYARA_MICRO;
-        }
-        if (clazz.getSimpleName().startsWith("OpenLiberty")) {
-            result = OPEN_LIBERTY;
-        }
-        if (clazz.getSimpleName().startsWith("Wildfly")) {
-            result = WILDFLY;
-        }
-        return result;
+    public static SupportedRuntime valueFor(String value) {
+        return Arrays.stream(SupportedRuntime.values())
+                .filter(sr -> sr.name().equalsIgnoreCase(value))
+                .findAny()
+                .orElse(null);
     }
 }

@@ -28,14 +28,22 @@ import java.lang.annotation.Target;
 public @interface ContainerIntegrationTest {
 
     /**
+     * Define the runtime on which the test needs to be run. {$code DEFAULT} means the system property
+     * be.atbash.test.runtime will be used.
+     */
+    SupportedRuntime runtime() default SupportedRuntime.DEFAULT;
+
+    /**
      * When debug activated, the JVM option to start in debug mode (with suspended=y) is added and the timeout is increased to 120 seconds.
      * This gives the developer the time to connect a remote debugger to the Container process.
+     *
      * @return true when JVM needs to be started in debug mode.
      */
     boolean debug() default false;
 
     /**
      * When live logging (default is false) is activated, the server.log is send to the test run output.
+     *
      * @return true when live logging needs to be activated.
      */
     boolean liveLogging() default false;
@@ -44,6 +52,7 @@ public @interface ContainerIntegrationTest {
      * Defines a volume mapping between the host and the container in read-write mode. The array most always contain
      * a multiple of 2 items. The first one is the directory on the host, the second in the container.
      * An exception on the multiple of 2 is when there is only 1 but is an empty String
+     *
      * @return Mapping pairs for the volume mapping.
      */
     String[] volumeMapping() default "";

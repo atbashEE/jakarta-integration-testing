@@ -15,7 +15,6 @@
  */
 package be.atbash.testing.integration.jupiter;
 
-import be.atbash.testing.integration.test.AbstractContainerIntegrationTest;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.junit.jupiter.api.Assertions;
 import org.junit.platform.commons.support.AnnotationSupport;
@@ -88,7 +87,7 @@ public class ContainerAdapterMetaData {
         result.liveLogging = containerIntegrationTest.liveLogging();
 
 
-        result.supportedRuntime = determineRuntime(testClass);
+        result.supportedRuntime = determineRuntime(containerIntegrationTest.runtime());
         result.port = determinePort(result.supportedRuntime);
         result.warFileLocation = findAppFile().getAbsolutePath();
         result.volumeMapping = defineVolumeMappings(containerIntegrationTest.volumeMapping());
@@ -113,20 +112,16 @@ public class ContainerAdapterMetaData {
         return port;
     }
 
-    private static SupportedRuntime determineRuntime(Class<?> requiredTestClass) {
+    private static SupportedRuntime determineRuntime(SupportedRuntime runtime) {
 
-        Class<?> containerIntegrationClass = requiredTestClass;
-        // TODO Can this logic be better/smarter ?
-        while (!containerIntegrationClass.getSuperclass().equals(AbstractContainerIntegrationTest.class) && !containerIntegrationClass.equals(Object.class)) {
-            containerIntegrationClass = containerIntegrationClass.getSuperclass();
-            if (containerIntegrationClass.equals(Object.class)) {
-                break;
-            }
+        SupportedRuntime result = runtime;
+        if (result == SupportedRuntime.DEFAULT) {
+            result = SupportedRuntime.valueFor(System.getProperty("be.atbash.test.runtime", "DEFAULT"));
         }
-        if (containerIntegrationClass.equals(Object.class)) {
-            Assertions.fail("The @ContainerIntegrationTest annotation must be used on a (descendant) class of AbstractContainerIntegrationTest.class");
+        if (result == SupportedRuntime.DEFAULT) {
+            Assertions.fail("The runtime could not be determined fro mthe annotation or the System property");
         }
-        return SupportedRuntime.determineRuntime((Class<? extends AbstractContainerIntegrationTest>) containerIntegrationClass);
+        return result;
     }
 
     private static File findAppFile() {
