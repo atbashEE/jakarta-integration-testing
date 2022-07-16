@@ -30,23 +30,23 @@ import java.nio.file.Path;
  * A Helper class that generates the Dockerfile and dependencies within a temp directory.
  * Is required for OpenLiberty but also used for the other runtimes as MountableFile with .withCopyToContainer() and
  * TestExecutionExceptionHandler don't go well together (Broken pipe when previous run failed)
-
- * TODO Allow to provide the version  container.
+ * <p>
  * TODO Refactor with Factory and specific implementation classes for the 3 runtimes
  */
 public class DockerImageProcessor {
     public static ImageFromDockerfile getImage(SupportedRuntime supportedRuntime, String warFileLocation) {
+        String version = System.getProperty("be.atbash.test.runtime.version", "");
         ImageFromDockerfile result;
         switch (supportedRuntime) {
 
             case PAYARA_MICRO:
-                result = getPayaraMicroImage(warFileLocation);
+                result = getPayaraMicroImage(warFileLocation, version);
                 break;
             case OPEN_LIBERTY:
-                result = getOpenLibertyImage(warFileLocation);
+                result = getOpenLibertyImage(warFileLocation, version);
                 break;
             case WILDFLY:
-                result = getWildflyImage(warFileLocation);
+                result = getWildflyImage(warFileLocation, version);
                 break;
             default:
                 throw new IllegalArgumentException(String.format("Unknown Supported runtime %s", supportedRuntime));
@@ -54,8 +54,9 @@ public class DockerImageProcessor {
         return result;
     }
 
-    private static ImageFromDockerfile getPayaraMicroImage(String warFileLocation) {
-        String dockerFileContext = definePayaraMicroDockerfileContent("payara/micro:5.2022.2-jdk11");
+    private static ImageFromDockerfile getPayaraMicroImage(String warFileLocation, String version) {
+        String fromImage = defineFromImageName("payara/micro", version, "5.2022.2-jdk11");
+        String dockerFileContext = definePayaraMicroDockerfileContent(fromImage);
 
         try {
             // Temporary directory where we assemble all required files to build the custom image
@@ -75,8 +76,22 @@ public class DockerImageProcessor {
         return null;
     }
 
-    private static ImageFromDockerfile getOpenLibertyImage(String warFileLocation) {
-        String dockerFileContext = defineOpenLibertyDockerfileContent("openliberty/open-liberty:22.0.0.6-full-java11-openj9-ubi");
+    private static String defineFromImageName(String imageName, String suppliedVersion, String defaultTagName) {
+        if (suppliedVersion.contains("/") || suppliedVersion.contains(":")) {
+            // It looks like the user specified a imageName with version number, so use that one.
+            return suppliedVersion;
+        }
+        if (suppliedVersion.isBlank()) {
+            // We use the default as user did not specify version/tag name
+            return imageName + ":" + defaultTagName;
+        }
+        // Use the version/tag name specified by the user
+        return imageName + ":" + suppliedVersion;
+    }
+
+    private static ImageFromDockerfile getOpenLibertyImage(String warFileLocation, String version) {
+        String fromImage = defineFromImageName("openliberty/open-liberty", version, "22.0.0.6-full-java11-openj9-ubi");
+        String dockerFileContext = defineOpenLibertyDockerfileContent(fromImage);
 
         try {
             // Temporary directory where we assemble all required files to build the custom image
@@ -100,8 +115,9 @@ public class DockerImageProcessor {
         return null;
     }
 
-    private static ImageFromDockerfile getWildflyImage(String warFileLocation) {
-        String dockerFileContext = defineWildflyDockerfileContent("quay.io/wildfly/wildfly:26.1.1.Final");
+    private static ImageFromDockerfile getWildflyImage(String warFileLocation, String version) {
+        String fromImage = defineFromImageName("quay.io/wildfly/wildfly", version, "26.1.1.Final");
+        String dockerFileContext = defineWildflyDockerfileContent(fromImage);
 
         try {
             // Temporary directory where we assemble all required files to build the custom image
