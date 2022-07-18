@@ -15,6 +15,7 @@
  */
 package be.atbash.testing.integration.container;
 
+import be.atbash.testing.integration.container.image.DockerImageProcessor;
 import be.atbash.testing.integration.jupiter.SupportedRuntime;
 import org.testcontainers.containers.wait.strategy.Wait;
 
