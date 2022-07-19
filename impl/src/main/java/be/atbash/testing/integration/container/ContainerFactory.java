@@ -35,6 +35,9 @@ public class ContainerFactory {
             case WILDFLY:
                 result = new WildflyContainer(metaData.getWarFileLocation(), metaData.isDebug());
                 break;
+            case GLASSFISH:
+                result = new GlassfishContainer(metaData.getWarFileLocation(), metaData.isDebug());
+                break;
             default:
                 throw new IllegalArgumentException(String.format("Unsupported value %s of SupportedRuntime", metaData.getSupportedRuntime()));
         }

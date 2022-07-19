@@ -50,7 +50,7 @@ public class ContainerIntegrationTestExtension implements BeforeAllCallback, Aft
         AbstractIntegrationContainer<?> container = controller.getApplicationTestContainer();
 
         String root = "";
-        if (metaData.getSupportedRuntime() == SupportedRuntime.WILDFLY) {
+        if (metaData.getSupportedRuntime() == SupportedRuntime.WILDFLY || metaData.getSupportedRuntime() == SupportedRuntime.GLASSFISH) {
             // putting apps in /deployments directory of Wildfly uses the file name as root.
             // TODO Check if this is a problem for cross runtime compatibility. (for example when having multiple microservices)
             root = "/test";

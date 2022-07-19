@@ -19,7 +19,7 @@ import java.util.Arrays;
 
 public enum SupportedRuntime {
 
-    DEFAULT, PAYARA_MICRO, OPEN_LIBERTY, WILDFLY;
+    DEFAULT, PAYARA_MICRO, OPEN_LIBERTY, WILDFLY, GLASSFISH;
 
     public static SupportedRuntime valueFor(String value) {
         return Arrays.stream(SupportedRuntime.values())

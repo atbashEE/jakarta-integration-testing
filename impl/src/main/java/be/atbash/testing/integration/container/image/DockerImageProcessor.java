@@ -44,6 +44,9 @@ public class DockerImageProcessor {
             case WILDFLY:
                 result = new WildFlyDockerImageProducer();
                 break;
+            case GLASSFISH:
+                result = new GlassfishDockerImageProducer();
+                break;
             default:
                 throw new IllegalArgumentException(String.format("Unknown Supported runtime %s", supportedRuntime));
         }
