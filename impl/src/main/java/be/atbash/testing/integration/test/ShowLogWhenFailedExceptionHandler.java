@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 import org.testcontainers.junit.jupiter.Container;
 
 import javax.ws.rs.InternalServerErrorException;
+import javax.ws.rs.WebApplicationException;
 import java.lang.reflect.Field;
 
 /**
@@ -36,7 +37,7 @@ public class ShowLogWhenFailedExceptionHandler implements TestExecutionException
 
     @Override
     public void handleTestExecutionException(ExtensionContext extensionContext, Throwable throwable) throws Throwable {
-        if (throwable instanceof AssertionError || throwable instanceof NotFoundException || throwable instanceof InternalServerErrorException) {
+        if (throwable instanceof AssertionError || throwable instanceof NotFoundException || isInternalServerError(throwable)) {
 
             AbstractIntegrationContainer<?> mainContainer = getMainContainer(extensionContext.getRequiredTestClass());
 
@@ -45,6 +46,16 @@ public class ShowLogWhenFailedExceptionHandler implements TestExecutionException
             System.out.println(logs);
         }
         throw throwable;  // rethrow. We just wanted to output the container log.
+    }
+
+    private boolean isInternalServerError(Throwable throwable) {
+        boolean result = throwable instanceof InternalServerErrorException;
+        if (!result && throwable instanceof WebApplicationException) {
+            WebApplicationException wae = (WebApplicationException) throwable;
+            result = wae.getResponse().getStatus() == 500;
+        }
+
+        return result;
     }
 
     private AbstractIntegrationContainer<?> getMainContainer(Class<?> testClass) {
