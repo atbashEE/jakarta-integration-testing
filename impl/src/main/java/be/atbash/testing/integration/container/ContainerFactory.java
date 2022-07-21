@@ -27,16 +27,16 @@ public class ContainerFactory {
         switch (metaData.getSupportedRuntime()) {
 
             case PAYARA_MICRO:
-                result = new PayaraMicroContainer(metaData.getWarFileLocation(), metaData.isDebug());
+                result = new PayaraMicroContainer(metaData);
                 break;
             case OPEN_LIBERTY:
-                result = new OpenLibertyContainer(metaData.getWarFileLocation(), metaData.isDebug());
+                result = new OpenLibertyContainer(metaData);
                 break;
             case WILDFLY:
-                result = new WildflyContainer(metaData.getWarFileLocation(), metaData.isDebug());
+                result = new WildflyContainer(metaData);
                 break;
             case GLASSFISH:
-                result = new GlassfishContainer(metaData.getWarFileLocation(), metaData.isDebug());
+                result = new GlassfishContainer(metaData);
                 break;
             default:
                 throw new IllegalArgumentException(String.format("Unsupported value %s of SupportedRuntime", metaData.getSupportedRuntime()));

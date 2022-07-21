@@ -16,31 +16,24 @@
 package be.atbash.testing.integration.container;
 
 import be.atbash.testing.integration.container.image.DockerImageProcessor;
+import be.atbash.testing.integration.jupiter.ContainerAdapterMetaData;
 import be.atbash.testing.integration.jupiter.SupportedRuntime;
 import org.testcontainers.containers.wait.strategy.Wait;
-
-import java.time.Duration;
-import java.time.temporal.ChronoUnit;
 
 /**
  * Specialised Container for Wildfly.
  */
 public class WildflyContainer extends AbstractIntegrationContainer<WildflyContainer> {
 
-    public WildflyContainer(String warFileLocation, boolean debug) {
-        super(DockerImageProcessor.getImage(SupportedRuntime.WILDFLY, warFileLocation));
-        withExposedPorts(8080, 9990); // FIXME Reuse logic from ContainerAdapterMetaData.determinePort and/or kept within ContainerAdapterMetaData
+    public WildflyContainer(ContainerAdapterMetaData metaData) {
+        super(DockerImageProcessor.getImage(SupportedRuntime.WILDFLY, metaData.getWarFileLocation()));
+        withExposedPorts(metaData.getPort(), 9990);
         // port 9990 for the management where health is
 
         // Health point
         //waitingFor(Wait.forHttp("/health").forPort(9990));  // FIXME Test out why this isn't working
         waitingFor(Wait.forLogMessage(".*WFLYSRV0010: Deployed \"test.war\".*", 1));
 
-        // FIXME duplicated with the OpenLiberty Container.
-        if (debug) {
-            addFixedExposedPort(5005, 5005);
-            withEnv("JVM_ARGS", "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:5005");
-            withStartupTimeout(Duration.of(60, ChronoUnit.SECONDS));
-        }
+        prepareForRemoteDebug(metaData.isDebug());
     }
 }

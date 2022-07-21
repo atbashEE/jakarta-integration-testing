@@ -17,6 +17,8 @@ package be.atbash.testing.integration.container;
 
 import org.testcontainers.containers.GenericContainer;
 
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.concurrent.Future;
 
 /**
@@ -30,4 +32,13 @@ public abstract class AbstractIntegrationContainer<SELF extends AbstractIntegrat
     public AbstractIntegrationContainer(Future<String> image) {
         super(image);
     }
+
+    protected void prepareForRemoteDebug(boolean debug) {
+        if (debug) {
+            addFixedExposedPort(5005, 5005);
+            withEnv("JVM_ARGS", "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:5005");
+            withStartupTimeout(Duration.of(60, ChronoUnit.SECONDS));
+        }
+    }
+
 }

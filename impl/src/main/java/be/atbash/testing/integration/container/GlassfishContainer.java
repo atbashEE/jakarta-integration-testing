@@ -16,27 +16,24 @@
 package be.atbash.testing.integration.container;
 
 import be.atbash.testing.integration.container.image.DockerImageProcessor;
+import be.atbash.testing.integration.jupiter.ContainerAdapterMetaData;
 import be.atbash.testing.integration.jupiter.SupportedRuntime;
 import org.testcontainers.containers.wait.strategy.Wait;
-
-import java.time.Duration;
-import java.time.temporal.ChronoUnit;
 
 /**
  * Specialised Container for Wildfly.
  */
 public class GlassfishContainer extends AbstractIntegrationContainer<GlassfishContainer> {
 
-    public GlassfishContainer(String warFileLocation, boolean debug) {
-        super(DockerImageProcessor.getImage(SupportedRuntime.GLASSFISH, warFileLocation));
-        withExposedPorts(8080);
-        // port 9990 for the management where health is
+    public GlassfishContainer(ContainerAdapterMetaData metaData) {
+        super(DockerImageProcessor.getImage(SupportedRuntime.GLASSFISH, metaData.getWarFileLocation()));
+        withExposedPorts(metaData.getPort());
 
         // Check if application is deployed
         waitingFor(Wait.forLogMessage(".*_MessageID=NCLS-DEPLOYMENT-02035.*", 1));
 
 
-        if (debug) {
+        if (metaData.isDebug()) {
             throw new UnsupportedOperationException("Debug is not supported with Glassfish");
         }
     }

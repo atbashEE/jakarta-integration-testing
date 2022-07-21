@@ -16,29 +16,22 @@
 package be.atbash.testing.integration.container;
 
 import be.atbash.testing.integration.container.image.DockerImageProcessor;
+import be.atbash.testing.integration.jupiter.ContainerAdapterMetaData;
 import be.atbash.testing.integration.jupiter.SupportedRuntime;
 import org.testcontainers.containers.wait.strategy.Wait;
-
-import java.time.Duration;
-import java.time.temporal.ChronoUnit;
 
 /**
  * Specialised Container for Payara Micro.
  */
 public class PayaraMicroContainer extends AbstractIntegrationContainer<PayaraMicroContainer> {
 
-    public PayaraMicroContainer(String warFileLocation, boolean debug) {
-        super(DockerImageProcessor.getImage(SupportedRuntime.PAYARA_MICRO, warFileLocation));
-        withExposedPorts(8080); // FIXME Reuse logic from ContainerAdapterMetaData.determinePort and/or kept within ContainerAdapterMetaData
+    public PayaraMicroContainer(ContainerAdapterMetaData metaData) {
+        super(DockerImageProcessor.getImage(SupportedRuntime.PAYARA_MICRO, metaData.getWarFileLocation()));
+        withExposedPorts(metaData.getPort());
 
         // Health point of Payara Micro based on MicroProfile Health
         waitingFor(Wait.forHttp("/health"));
 
-        // FIXME duplicated with the OpenLiberty Container.
-        if (debug) {
-            addFixedExposedPort(5005, 5005);
-            withEnv("JVM_ARGS", "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:5005");
-            withStartupTimeout(Duration.of(60, ChronoUnit.SECONDS));
-        }
+        prepareForRemoteDebug(metaData.isDebug());
     }
 }
