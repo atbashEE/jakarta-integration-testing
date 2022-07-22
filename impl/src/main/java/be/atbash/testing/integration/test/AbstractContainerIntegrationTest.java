@@ -26,7 +26,7 @@ import org.testcontainers.junit.jupiter.Container;
 public abstract class AbstractContainerIntegrationTest {
 
     @Container
-    public static AbstractIntegrationContainer testContainer;
+    public static AbstractIntegrationContainer<?> testContainer;
 
     @RegisterExtension
     private final ShowLogWhenFailedExceptionHandler showLogExceptionHandler = new ShowLogWhenFailedExceptionHandler();

@@ -120,7 +120,7 @@ public class ContainerAdapterMetaData {
             result = SupportedRuntime.valueFor(System.getProperty("be.atbash.test.runtime", "DEFAULT"));
         }
         if (result == SupportedRuntime.DEFAULT) {
-            Assertions.fail("The runtime could not be determined fro mthe annotation or the System property");
+            Assertions.fail("The runtime could not be determined from the annotation or the System property");
         }
         return result;
     }
