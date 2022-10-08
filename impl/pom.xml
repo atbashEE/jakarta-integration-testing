@@ -33,9 +33,9 @@
 
     <properties>
         <junit.version>5.8.2</junit.version>
-        <testcontainers.version>1.17.2</testcontainers.version>
-        <apache.cxf.version>3.5.2</apache.cxf.version>
-        <jackson.version>2.13.3</jackson.version>
+        <testcontainers.version>1.17.4</testcontainers.version>
+        <apache.cxf.version>3.5.3</apache.cxf.version>
+        <jackson.version>2.13.4</jackson.version>
 
         <asciidoctor.maven.plugin.version>2.2.1</asciidoctor.maven.plugin.version>
         <asciidoctorj.pdf.version>1.6.2</asciidoctorj.pdf.version>
@@ -61,7 +61,7 @@
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>junit-jupiter</artifactId>
-            <version>1.17.2</version>
+            <version>${testcontainers.version}</version>
         </dependency>
 
         <!-- To call our endpoints based on MiroProfile Rest Client and an interface.  -->
