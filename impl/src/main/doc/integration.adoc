@@ -1,7 +1,7 @@
 :doctype: book
 = Integration testing for Jakarta EE
 Rudy De Busscher <rdebusscher@gmail.com>
-v1.0.0, 22/07/2022
+v1.0.0, 08/10/2022
 
 == Release notes
 
