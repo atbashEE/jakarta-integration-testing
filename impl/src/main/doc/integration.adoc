@@ -1,9 +1,13 @@
 :doctype: book
 = Integration testing for Jakarta EE
 Rudy De Busscher <rdebusscher@gmail.com>
-v1.0.0, 08/10/2022
+v1.1.0, ??/??/2022
 
 == Release notes
+
+=== 1.1.0
+
+. Added support for custom Docker build scripts.
 
 === 1.0.0
 
@@ -20,7 +24,7 @@ The Jakarta Integration Tet framework helps you to run your application on the a
 
 == Supported Jakarta runtimes
 
-This integration testing framework is designed to work with Jakarta Runtimes, Jakarta EE 8 as this is still the version that is used by the bulk of the applications that are developed today but actually it is not limited to this version (see further on). The runtimes that are supported are:
+This integration testing framework is designed to work with Jakarta Runtimes, Jakarta EE 8 as this is still the version that is used by the bulk of the applications that are developed today, but actually it is not limited to this version (see further on). The runtimes that are supported are:
 
 - Payara Micro - https://www.payara.fish/[website]
 - OpenLiberty - https://openliberty.io/[website]
@@ -36,7 +40,7 @@ To get started, at this dependency to your project
     <dependency>
         <groupId>be.atbash.test</groupId>
         <artifactId>integration-testing</artifactId>
-        <version>1.0.0</version>
+        <version>1.1.0</version>
         <scope>test</scope>
     </dependency>
 ----
@@ -122,6 +126,58 @@ When you specify the System property `be.atbash.test.runtime.version`, it is use
 
 You can specify just the tagname to select the same Docker image but another version (like _5.2022.2_ for the Java 8 version of the Payara Micro image). When this value contains a `:` or `/`, it will be used as the value for the _FROM_ command in the Docker file. This allows you to use your own Docker image for testing your application.
 
+== Custom Docker Build scripts (v1.1.0)
+
+Instead of using the default images for the supported runtimes as mentioned earlier, you can also define a custom build script that will be used.
+
+To indicate the directory that contains the Docker build artifacts, use the annotation `@CustomBuildFile` annotation on your test class.
+
+[source]
+----
+@ContainerIntegrationTest(runtime = SupportedRuntime.PAYARA_MICRO)
+@CustomBuildFile(location = "custom/payara")
+public class CustomPayaraIT extends AbstractContainerIntegrationTest {
+----
+
+You still need to indicate the runtime as some runtime specific actions are performed (this can also be through the System property)  The location is relative to the _<project-root>/src/docker_ directory.
+
+The directory can contain a file called `Dockerfile` that will be used as build for the image.
+
+The directory itself and all subdirectories are also included in the build tar, so it can contain additional files referenced within the Docker build file.
+
+If no file called `Dockerfile` is found, the default one is used. In this case only the additional files are included int the Docker IMage build but in most cases this will not be useful.
+
+The following statements are added to this `Dockerfile` depending on the supported runtime.
+
+=== Payara Micro
+
+[source]
+----
+CMD ["--deploy", "/opt/payara/deployments/test.war", "--noCluster",  "--contextRoot", "/"]
+ADD test.war /opt/payara/deployments
+----
+
+=== OpenLiberty
+
+[source]
+----
+ADD test.war /config/apps
+----
+
+=== Wildfly
+
+[source]
+----
+ADD test.war /opt/jboss/wildfly/standalone/deployments
+----
+
+=== Glassfish
+
+[source]
+----
+ADD test.war ${DEPLOYMENT_DIR}
+----
+
 == Jakarta runtime specifics
 
 The current version of the framework is designed to work with any Jakarta EE 8 compatible runtime and the application is running with Java 11.  For a few runtimes, there are some specific additional requirements or limitations.
@@ -137,6 +193,8 @@ Important here is the element `webApplication` that makes sure the application u
 Since there is no official Glassfish Docker image available, the framework uses the image that is created by https://github.com/AdamBien/docklands[Adam Bien, the Docklands images].
 
 However, this image runs on Java 8 and has no support for remote debugging.  So consider the support for Glassfish as very limited for the moment due to the lack of an official Docker Image for it.
+
+As of version 1.1.0, you can make use of the custom Docker build file to overcome this problem by providing your own script.
 
 == Remote Debug
 
@@ -163,7 +221,7 @@ It is also possible to define a volume mapping between the host running the test
 
 You can define 1 or multiple mappings by defining sets of 2, 4, 6, ... strings.
 
-The first one is the directory on the host. It can be a relative path and is resolved against the current directory of the current process. It might also be a absolute path and the JVM logic is used to derive the absolute path for the value you specify (using `File.getAbsolutePath`).
+The first one is the directory on the host. It can be a relative path and is resolved against the current directory of the current process. It might also be an absolute path and the JVM logic is used to derive the absolute path for the value you specify (using `File.getAbsolutePath`).
 The second string is the directory within the container and must always be absolute.
 
 === Live logging

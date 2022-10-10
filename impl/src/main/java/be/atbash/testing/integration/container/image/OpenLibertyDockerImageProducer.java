@@ -26,13 +26,17 @@ import java.nio.file.Path;
 public class OpenLibertyDockerImageProducer extends DockerImageProducer {
 
     @Override
-    public ImageFromDockerfile getImage(String warFileLocation, String version) {
+    public ImageFromDockerfile getImage(String warFileLocation, String version, String location) {
         String fromImage = defineFromImageName("openliberty/open-liberty", version, "22.0.0.6-full-java11-openj9-ubi");
-        String dockerFileContext = defineDockerfileContent(fromImage);
+        String dockerFileContext = defineDockerfileContent(fromImage, location);
 
         try {
             // Temporary directory where we assemble all required files to build the custom image
             Path tempDirWithPrefix = Files.createTempDirectory("atbash.test.");
+
+            if (location != null) {
+                copyLocationContentToTempFile(location, tempDirWithPrefix);
+            }
 
             // Create the Dockerfile
             Path dockerPath = saveDockerFile(dockerFileContext, tempDirWithPrefix);
@@ -52,12 +56,18 @@ public class OpenLibertyDockerImageProducer extends DockerImageProducer {
         return null;
     }
 
-    private String defineDockerfileContent(String fromVersion) {
+    private String defineDockerfileContent(String fromVersion, String location) {
 
-        return "FROM " + fromVersion + "\n" +
-                "EXPOSE 5005 \n" +
-                "ADD server.xml /config/server.xml \n" +
-                "RUN configure.sh \n" +
+        String content = loadOptionalDockerFile(location);
+
+        if (content == null) {
+            // Default content for DockerFile
+            content = "FROM " + fromVersion + "\n" +
+                    "EXPOSE 5005 \n" +
+                    "ADD server.xml /config/server.xml \n" +
+                    "RUN configure.sh";
+        }
+        return content + "\n" +
                 "ADD test.war /config/apps \n";
     }
 }

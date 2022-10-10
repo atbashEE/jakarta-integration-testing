@@ -25,13 +25,17 @@ import java.nio.file.Path;
 public class PayaraMicroDockerImageProducer extends DockerImageProducer {
 
     @Override
-    public ImageFromDockerfile getImage(String warFileLocation, String version) {
+    public ImageFromDockerfile getImage(String warFileLocation, String version, String location) {
         String fromImage = defineFromImageName("payara/micro", version, "5.2022.2-jdk11");
-        String dockerFileContext = defineDockerfileContent(fromImage);
+        String dockerFileContext = defineDockerfileContent(fromImage, location);
 
         try {
             // Temporary directory where we assemble all required files to build the custom image
             Path tempDirWithPrefix = Files.createTempDirectory("atbash.test.");
+
+            if (location != null) {
+                copyLocationContentToTempFile(location, tempDirWithPrefix);
+            }
 
             // Create the Dockerfile
             Path dockerPath = saveDockerFile(dockerFileContext, tempDirWithPrefix);
@@ -47,9 +51,14 @@ public class PayaraMicroDockerImageProducer extends DockerImageProducer {
         return null;
     }
 
-    private String defineDockerfileContent(String fromVersion) {
+    private String defineDockerfileContent(String fromVersion, String location) {
+        String content = loadOptionalDockerFile(location);
 
-        return "FROM " + fromVersion + "\n" +
+        if (content == null) {
+            // Default content for DockerFile
+            content = "FROM " + fromVersion;
+        }
+        return content + "\n" +
                 "CMD [\"--deploy\", \"/opt/payara/deployments/test.war\", \"--noCluster\",  \"--contextRoot\", \"/\"]\n" +
                 "ADD test.war /opt/payara/deployments \n";
     }

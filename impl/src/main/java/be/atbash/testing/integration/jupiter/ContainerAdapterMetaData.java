@@ -15,6 +15,8 @@
  */
 package be.atbash.testing.integration.jupiter;
 
+import be.atbash.testing.integration.container.exception.LocationNotFoundException;
+import be.atbash.testing.integration.container.image.CustomBuildFile;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.junit.jupiter.api.Assertions;
 import org.junit.platform.commons.support.AnnotationSupport;
@@ -39,6 +41,8 @@ public class ContainerAdapterMetaData {
 
     private SupportedRuntime supportedRuntime;
 
+    private String customBuildDirectory;
+
     private int port;
     private String warFileLocation;
     private boolean debug;
@@ -53,6 +57,10 @@ public class ContainerAdapterMetaData {
 
     public SupportedRuntime getSupportedRuntime() {
         return supportedRuntime;
+    }
+
+    public String getCustomBuildDirectory() {
+        return customBuildDirectory;
     }
 
     public int getPort() {
@@ -86,6 +94,7 @@ public class ContainerAdapterMetaData {
         result.debug = containerIntegrationTest.debug();
         result.liveLogging = containerIntegrationTest.liveLogging();
 
+        result.customBuildDirectory = determineCustomBuildDirectory(testClass);
 
         result.supportedRuntime = determineRuntime(containerIntegrationTest.runtime());
         result.port = determinePort(result.supportedRuntime);
@@ -94,6 +103,23 @@ public class ContainerAdapterMetaData {
 
         result.restClientFields = AnnotationSupport.findAnnotatedFields(testClass, RestClient.class);
 
+        return result;
+    }
+
+    private static String determineCustomBuildDirectory(Class<?> testClass) {
+        String result = null;
+        CustomBuildFile customBuildFileAnnotation = testClass.getAnnotation(CustomBuildFile.class);
+        if (customBuildFileAnnotation != null && !customBuildFileAnnotation.location().isBlank()) {
+            result = customBuildFileAnnotation.location().trim();
+            String location = "./src/docker/" + (result.startsWith("/") ? result.substring(1) : result);
+            File file = new File(location);
+            if (!file.exists()) {
+                throw new LocationNotFoundException(location, file.getAbsolutePath());
+            }
+            result = file.getAbsolutePath() + "/";
+
+            LOGGER.info(String.format("Using the directory %s for custom image generation", result));
+        }
         return result;
     }
 

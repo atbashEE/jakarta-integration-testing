@@ -24,11 +24,11 @@ import org.testcontainers.images.builder.ImageFromDockerfile;
  * TestExecutionExceptionHandler don't go well together (Broken pipe when previous run failed)
  */
 public class DockerImageProcessor {
-    public static ImageFromDockerfile getImage(SupportedRuntime supportedRuntime, String warFileLocation) {
+    public static ImageFromDockerfile getImage(SupportedRuntime supportedRuntime, String warFileLocation, String location) {
         String version = System.getProperty("be.atbash.test.runtime.version", "");
         DockerImageProducer producer = retrieveProducer(supportedRuntime);
 
-        return producer.getImage(warFileLocation, version);
+        return producer.getImage(warFileLocation, version, location);
     }
 
     private static DockerImageProducer retrieveProducer(SupportedRuntime supportedRuntime) {

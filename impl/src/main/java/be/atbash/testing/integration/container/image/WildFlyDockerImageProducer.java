@@ -25,13 +25,17 @@ import java.nio.file.Path;
 public class WildFlyDockerImageProducer extends DockerImageProducer {
 
     @Override
-    public ImageFromDockerfile getImage(String warFileLocation, String version) {
+    public ImageFromDockerfile getImage(String warFileLocation, String version, String location) {
         String fromImage = defineFromImageName("quay.io/wildfly/wildfly", version, "26.1.1.Final");
-        String dockerFileContext = defineDockerfileContent(fromImage);
+        String dockerFileContext = defineDockerfileContent(fromImage, location);
 
         try {
             // Temporary directory where we assemble all required files to build the custom image
             Path tempDirWithPrefix = Files.createTempDirectory("atbash.test.");
+
+            if (location != null) {
+                copyLocationContentToTempFile(location, tempDirWithPrefix);
+            }
 
             // Create the Dockerfile
             Path dockerPath = saveDockerFile(dockerFileContext, tempDirWithPrefix);
@@ -48,9 +52,15 @@ public class WildFlyDockerImageProducer extends DockerImageProducer {
     }
 
 
-    private String defineDockerfileContent(String fromVersion) {
+    private String defineDockerfileContent(String fromVersion, String location) {
 
-        return "FROM " + fromVersion + "\n" +
+        String content = loadOptionalDockerFile(location);
+
+        if (content == null) {
+            // Default content for DockerFile
+            content = "FROM " + fromVersion;
+        }
+        return content + "\n" +
                 "ADD test.war /opt/jboss/wildfly/standalone/deployments \n";
     }
 

@@ -26,7 +26,7 @@ import org.testcontainers.containers.wait.strategy.Wait;
 public class GlassfishContainer extends AbstractIntegrationContainer<GlassfishContainer> {
 
     public GlassfishContainer(ContainerAdapterMetaData metaData) {
-        super(DockerImageProcessor.getImage(SupportedRuntime.GLASSFISH, metaData.getWarFileLocation()));
+        super(DockerImageProcessor.getImage(SupportedRuntime.GLASSFISH, metaData.getWarFileLocation(), metaData.getCustomBuildDirectory()));
         withExposedPorts(metaData.getPort());
 
         // Check if application is deployed

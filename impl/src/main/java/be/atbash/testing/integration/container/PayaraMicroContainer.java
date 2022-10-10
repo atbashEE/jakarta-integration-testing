@@ -26,7 +26,7 @@ import org.testcontainers.containers.wait.strategy.Wait;
 public class PayaraMicroContainer extends AbstractIntegrationContainer<PayaraMicroContainer> {
 
     public PayaraMicroContainer(ContainerAdapterMetaData metaData) {
-        super(DockerImageProcessor.getImage(SupportedRuntime.PAYARA_MICRO, metaData.getWarFileLocation()));
+        super(DockerImageProcessor.getImage(SupportedRuntime.PAYARA_MICRO, metaData.getWarFileLocation(), metaData.getCustomBuildDirectory()));
         withExposedPorts(metaData.getPort());
 
         // Health point of Payara Micro based on MicroProfile Health

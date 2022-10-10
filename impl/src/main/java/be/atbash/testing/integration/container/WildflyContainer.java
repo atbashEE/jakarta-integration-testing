@@ -26,7 +26,7 @@ import org.testcontainers.containers.wait.strategy.Wait;
 public class WildflyContainer extends AbstractIntegrationContainer<WildflyContainer> {
 
     public WildflyContainer(ContainerAdapterMetaData metaData) {
-        super(DockerImageProcessor.getImage(SupportedRuntime.WILDFLY, metaData.getWarFileLocation()));
+        super(DockerImageProcessor.getImage(SupportedRuntime.WILDFLY, metaData.getWarFileLocation(), metaData.getCustomBuildDirectory()));
         withExposedPorts(metaData.getPort(), 9990);
         // port 9990 for the management where health is
 

@@ -27,7 +27,7 @@ public class OpenLibertyContainer extends AbstractIntegrationContainer<OpenLiber
 
     public OpenLibertyContainer(ContainerAdapterMetaData metaData) {
 
-        super(DockerImageProcessor.getImage(SupportedRuntime.OPEN_LIBERTY, metaData.getWarFileLocation()));
+        super(DockerImageProcessor.getImage(SupportedRuntime.OPEN_LIBERTY, metaData.getWarFileLocation(), metaData.getCustomBuildDirectory()));
         withExposedPorts(metaData.getPort());
 
         // Health point of Payara Micro based on MicroProfile Health

@@ -39,7 +39,7 @@ class DockerImageProcessorTest {
 
     @Test
     void getImage() throws IOException {
-        ImageFromDockerfile image = DockerImageProcessor.getImage(SupportedRuntime.PAYARA_MICRO, "src/test/resources/test.war");
+        ImageFromDockerfile image = DockerImageProcessor.getImage(SupportedRuntime.PAYARA_MICRO, "src/test/resources/test.war", null);
 
         Assertions.assertThat(image).isNotNull();
         Assertions.assertThat(image.getDockerfile()).isPresent();
@@ -67,7 +67,7 @@ class DockerImageProcessorTest {
     @Test
     void getImage_versionSpecified() throws IOException {
         System.setProperty(VERSION_PROPERTY, "1234");
-        ImageFromDockerfile image = DockerImageProcessor.getImage(SupportedRuntime.PAYARA_MICRO, "src/test/resources/test.war");
+        ImageFromDockerfile image = DockerImageProcessor.getImage(SupportedRuntime.PAYARA_MICRO, "src/test/resources/test.war", null);
 
         Assertions.assertThat(image).isNotNull();
         Assertions.assertThat(image.getDockerfile()).isPresent();
@@ -83,7 +83,7 @@ class DockerImageProcessorTest {
     @Test
     void getImage_imageSpecified() throws IOException {
         System.setProperty(VERSION_PROPERTY, "myImage:4321");
-        ImageFromDockerfile image = DockerImageProcessor.getImage(SupportedRuntime.PAYARA_MICRO, "src/test/resources/test.war");
+        ImageFromDockerfile image = DockerImageProcessor.getImage(SupportedRuntime.PAYARA_MICRO, "src/test/resources/test.war", null);
 
         Assertions.assertThat(image).isNotNull();
         Assertions.assertThat(image.getDockerfile()).isPresent();
