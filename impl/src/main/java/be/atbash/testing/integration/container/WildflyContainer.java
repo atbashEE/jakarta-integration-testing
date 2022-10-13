@@ -19,6 +19,7 @@ import be.atbash.testing.integration.container.image.DockerImageProcessor;
 import be.atbash.testing.integration.jupiter.ContainerAdapterMetaData;
 import be.atbash.testing.integration.jupiter.SupportedRuntime;
 import org.testcontainers.containers.wait.strategy.Wait;
+import org.testcontainers.utility.DockerImageName;
 
 /**
  * Specialised Container for Wildfly.
@@ -35,5 +36,17 @@ public class WildflyContainer extends AbstractIntegrationContainer<WildflyContai
         waitingFor(Wait.forLogMessage(".*WFLYSRV0010: Deployed \"test.war\".*", 1));
 
         prepareForRemoteDebug(metaData.isDebug());
+    }
+
+    public WildflyContainer(DockerImageName dockerImageName) {
+        super(dockerImageName);
+
+        withExposedPorts(ContainerAdapterMetaData.determinePort(SupportedRuntime.WILDFLY), 9990);
+        // port 9990 for the management where health is
+
+        // Health point
+        //waitingFor(Wait.forHttp("/health").forPort(9990));  // FIXME Test out why this isn't working
+        waitingFor(Wait.forLogMessage(".*WFLYSRV0010: Deployed .*", 1));
+
     }
 }

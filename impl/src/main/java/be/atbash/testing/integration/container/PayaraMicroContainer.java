@@ -19,6 +19,7 @@ import be.atbash.testing.integration.container.image.DockerImageProcessor;
 import be.atbash.testing.integration.jupiter.ContainerAdapterMetaData;
 import be.atbash.testing.integration.jupiter.SupportedRuntime;
 import org.testcontainers.containers.wait.strategy.Wait;
+import org.testcontainers.utility.DockerImageName;
 
 /**
  * Specialised Container for Payara Micro.
@@ -33,5 +34,15 @@ public class PayaraMicroContainer extends AbstractIntegrationContainer<PayaraMic
         waitingFor(Wait.forHttp("/health"));
 
         prepareForRemoteDebug(metaData.isDebug());
+    }
+
+    public PayaraMicroContainer(DockerImageName dockerImageName) {
+        super(dockerImageName);
+
+        withExposedPorts(ContainerAdapterMetaData.determinePort(SupportedRuntime.PAYARA_MICRO));
+
+        // Health point of Payara Micro based on MicroProfile Health
+        waitingFor(Wait.forHttp("/health"));
+
     }
 }

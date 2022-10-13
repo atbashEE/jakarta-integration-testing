@@ -123,7 +123,7 @@ public class ContainerAdapterMetaData {
         return result;
     }
 
-    private static int determinePort(SupportedRuntime supportedRuntime) {
+    public static int determinePort(SupportedRuntime supportedRuntime) {
         int port = 0;
         switch (supportedRuntime) {
 

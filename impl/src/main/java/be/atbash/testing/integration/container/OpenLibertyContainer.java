@@ -19,6 +19,7 @@ import be.atbash.testing.integration.container.image.DockerImageProcessor;
 import be.atbash.testing.integration.jupiter.ContainerAdapterMetaData;
 import be.atbash.testing.integration.jupiter.SupportedRuntime;
 import org.testcontainers.containers.wait.strategy.Wait;
+import org.testcontainers.utility.DockerImageName;
 
 /**
  * Specialised Generic Container for OpenLiberty.
@@ -34,5 +35,15 @@ public class OpenLibertyContainer extends AbstractIntegrationContainer<OpenLiber
         waitingFor(Wait.forHttp("/health"));
 
         prepareForRemoteDebug(metaData.isDebug());
+    }
+
+    public OpenLibertyContainer(DockerImageName dockerImageName) {
+        super(dockerImageName);
+
+        withExposedPorts(ContainerAdapterMetaData.determinePort(SupportedRuntime.OPEN_LIBERTY));
+
+        // Health point of Payara Micro based on MicroProfile Health
+        waitingFor(Wait.forHttp("/health"));
+
     }
 }

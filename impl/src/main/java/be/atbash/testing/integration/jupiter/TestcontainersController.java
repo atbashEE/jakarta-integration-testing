@@ -17,6 +17,7 @@ package be.atbash.testing.integration.jupiter;
 
 import be.atbash.testing.integration.container.AbstractIntegrationContainer;
 import be.atbash.testing.integration.container.ContainerFactory;
+import be.atbash.testing.integration.test.AbstractContainerIntegrationTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.platform.commons.support.AnnotationSupport;
@@ -71,15 +72,19 @@ public class TestcontainersController {
             }
             try {
                 boolean generic = true;
-                if (AbstractIntegrationContainer.class.isAssignableFrom(containerField.getType())) {
+                if (containerField.getDeclaringClass().equals(AbstractContainerIntegrationTest.class)) {
+                    // Only a Container within AbstractIntegrationContainer is the one from the framework
+                    // Other ones are 'generic' and defined by developer.
                     runtimeContainerField = containerField;
                     generic = false;
                 }
 
                 if (generic) {
                     // Some other container the developer uses in the test.
+                    containerField.setAccessible(true);  // Why is this required? it is a public static field
                     GenericContainer<?> startableContainer = (GenericContainer<?>) containerField.get(null);
                     startableContainer.setNetwork(Network.SHARED);
+                    startableContainer.withNetworkAliases(containerField.getName());  // Use variable name as host alias
                     discoveredContainers.add(startableContainer);
 
                 }

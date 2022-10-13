@@ -63,6 +63,7 @@ public class ContainerIntegrationTestExtension implements BeforeAllCallback, Aft
                     baseUri(baseURI).
                     build(field.getType());  // Create proxy based on the interface and information of the endpoints.
 
+            field.setAccessible(true);  // TODO Why is this required
             field.set(testInstance, restClient);
         }
 

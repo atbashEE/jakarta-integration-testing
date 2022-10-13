@@ -33,7 +33,7 @@ public class HelloWildflyIT extends AbstractContainerIntegrationTest {
     public CustomService customService;
 
     @Test
-    void sayHello() {
+    void getFileContent() {
         String value = customService.getFileContent();
         Assertions.assertThat(value).isEqualTo("Wildfly content file");
     }

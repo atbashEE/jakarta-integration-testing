@@ -16,6 +16,8 @@
 package be.atbash.testing.integration.container;
 
 import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.Network;
+import org.testcontainers.utility.DockerImageName;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
@@ -31,6 +33,12 @@ public abstract class AbstractIntegrationContainer<SELF extends AbstractIntegrat
 
     public AbstractIntegrationContainer(Future<String> image) {
         super(image);
+        setNetwork(Network.SHARED);
+    }
+
+    public AbstractIntegrationContainer(DockerImageName dockerImageName) {
+        super(dockerImageName);
+        setNetwork(Network.SHARED);
     }
 
     protected void prepareForRemoteDebug(boolean debug) {

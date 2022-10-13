@@ -19,6 +19,7 @@ import be.atbash.testing.integration.container.image.DockerImageProcessor;
 import be.atbash.testing.integration.jupiter.ContainerAdapterMetaData;
 import be.atbash.testing.integration.jupiter.SupportedRuntime;
 import org.testcontainers.containers.wait.strategy.Wait;
+import org.testcontainers.utility.DockerImageName;
 
 /**
  * Specialised Container for Wildfly.
@@ -32,9 +33,18 @@ public class GlassfishContainer extends AbstractIntegrationContainer<GlassfishCo
         // Check if application is deployed
         waitingFor(Wait.forLogMessage(".*_MessageID=NCLS-DEPLOYMENT-02035.*", 1));
 
-
         if (metaData.isDebug()) {
             throw new UnsupportedOperationException("Debug is not supported with Glassfish");
         }
+    }
+
+    public GlassfishContainer(DockerImageName dockerImageName) {
+        super(dockerImageName);
+
+        withExposedPorts(ContainerAdapterMetaData.determinePort(SupportedRuntime.WILDFLY));
+
+        // Check if application is deployed
+        waitingFor(Wait.forLogMessage(".*_MessageID=NCLS-DEPLOYMENT-02035.*", 1));
+
     }
 }
