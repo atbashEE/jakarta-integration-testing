@@ -9,6 +9,7 @@ v1.1.0, ??/??/2022
 
 . Added support for custom Docker build scripts.
 . Easier for using additional containers that are used by the application under test (microservices set-up)
+. Using _WireMock_ for providing responses of remote services.
 
 === 1.0.0
 
@@ -179,7 +180,45 @@ ADD test.war /opt/jboss/wildfly/standalone/deployments
 ADD test.war ${DEPLOYMENT_DIR}
 ----
 
-== Additional containers for a test (1.1.0
+== Using WireMock for fake remote responses (v1.1.0)
+
+Many times your application calls other services to have all data to respond to the user request. These data can be provided in your test by putting a _WireMock_ server as the server that provides you results for these remote calls.
+
+Using _WireMock_ is simplified within the Integration Testing framework as it has a specific class and methods to define the behaviour of the remote endpoints.
+
+You can use a _WireMock_ instance in your test by adding the following code snippet for defining the container.
+
+----
+    @Container
+    public static final WireMockContainer wireMockContainer = WireMockContainer.forHost("wire");
+----
+
+And defining the response for a certain URL call be done by using the following statements in your tests
+
+----
+
+   MappingBuilder mappingBuilder = new MappingBuilder()
+      .forURL("/path")
+      .withBody(foo);
+
+   wireMockContainer.configureResponse(mappingBuilder);
+----
+
+Your method under test is then assumed to call a URL  `http://wire:8080/path` as part of its logic. You can use the MicroProfile config and Rest client functionality, supported by Payara Micro, OpenLiberty and WildFly, to call and configure this endpoint.
+
+The `foo` instance is a POJO that needs to be returned as the JSON response.
+
+The `MappingBuilder` class has several methods to define the response of _WireMock_.
+
+- _.withBody()_ with a String defines the body content and sets the _Content-Type_ to _text/plain_.  When the parameter is any other object type, it is converted to JSON and the _Content-Type_ to _application/json_.
+- _.forURL()_ define the path of the URL that ill provide the response.
+- _.withStatus()_ can be used to change the default return status 200.
+- _.withMethod()_ defines the HTTP method for the request tht will be supported. By default this is _GET_.
+- _.withContentType()_ can be used to define a specific _Content-Type_. You should use this _.withContentType()_ only after setting the body as that method already sets a specific _Content-Type_.
+
+After a test method is executed, the mapping configuration of the _WireMock_ server is reset so that you can test different scenarios within one test class.
+
+== Additional containers for a test (v1.1.0)
 
 Additional containers can be started together with the container running your application under test.
 

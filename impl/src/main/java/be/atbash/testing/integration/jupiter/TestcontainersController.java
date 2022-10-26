@@ -18,6 +18,7 @@ package be.atbash.testing.integration.jupiter;
 import be.atbash.testing.integration.container.AbstractIntegrationContainer;
 import be.atbash.testing.integration.container.ContainerFactory;
 import be.atbash.testing.integration.test.AbstractContainerIntegrationTest;
+import be.atbash.testing.integration.wiremock.WireMockContainer;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.platform.commons.support.AnnotationSupport;
@@ -42,7 +43,8 @@ public class TestcontainersController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TestcontainersController.class);
 
-    private final Set<GenericContainer<?>> containers;
+    private final Set<GenericContainer<?>> containers = new HashSet<>();
+    private final Set<WireMockContainer> wireMockContainers = new HashSet<>();
     private final Class<?> testClass;
     private Field runtimeContainerField;
 
@@ -50,15 +52,12 @@ public class TestcontainersController {
 
     public TestcontainersController(Class<?> testClass) {
         this.testClass = testClass;
-        containers = discoverContainers(testClass); // This contains only @Container
-        // but method sets also runtimeContainerField
-        // This field is used in method config() to create the instances and add to containers variable.
+        discoverContainers(testClass);
 
     }
 
-    protected Set<GenericContainer<?>> discoverContainers(Class<?> clazz) {
+    protected void discoverContainers(Class<?> clazz) {
 
-        Set<GenericContainer<?>> discoveredContainers = new HashSet<>();
         for (Field containerField : AnnotationSupport.findAnnotatedFields(clazz, Container.class)) {
             if (!Modifier.isPublic(containerField.getModifiers())) {
                 throw new ExtensionConfigurationException("@Container annotated fields must be public visibility");
@@ -83,16 +82,20 @@ public class TestcontainersController {
                     // Some other container the developer uses in the test.
                     containerField.setAccessible(true);  // Why is this required? it is a public static field
                     GenericContainer<?> startableContainer = (GenericContainer<?>) containerField.get(null);
-                    startableContainer.setNetwork(Network.SHARED);
-                    startableContainer.withNetworkAliases(containerField.getName());  // Use variable name as host alias
-                    discoveredContainers.add(startableContainer);
+                    if (!(startableContainer instanceof WireMockContainer)) {
+                        startableContainer.setNetwork(Network.SHARED);
+                        startableContainer.withNetworkAliases(containerField.getName());  // Use variable name as host alias
+                    } else {
+                        wireMockContainers.add((WireMockContainer) startableContainer);
+                    }
+                    containers.add(startableContainer);
 
                 }
             } catch (IllegalArgumentException | IllegalAccessException e) {
                 LOGGER.warn("Unable to access field " + containerField, e);
             }
         }
-        return discoveredContainers;
+
     }
 
     public void config(ContainerAdapterMetaData metaData) {
@@ -146,4 +149,7 @@ public class TestcontainersController {
 
     }
 
+    public void resetWireMock() {
+        wireMockContainers.forEach(WireMockContainer::resetMapping);
+    }
 }

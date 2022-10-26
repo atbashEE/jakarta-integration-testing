@@ -18,10 +18,7 @@ package be.atbash.testing.integration.jupiter;
 import be.atbash.testing.integration.container.AbstractIntegrationContainer;
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import org.eclipse.microprofile.rest.client.RestClientBuilder;
-import org.junit.jupiter.api.extension.AfterAllCallback;
-import org.junit.jupiter.api.extension.BeforeAllCallback;
-import org.junit.jupiter.api.extension.ExtensionContext;
-import org.junit.jupiter.api.extension.TestInstancePostProcessor;
+import org.junit.jupiter.api.extension.*;
 
 import java.lang.reflect.Field;
 import java.net.URI;
@@ -29,7 +26,7 @@ import java.net.URI;
 /**
  * The JUnit5 extension that orchestrates the logic for the Integration with the Jakarta Runtime.
  */
-public class ContainerIntegrationTestExtension implements BeforeAllCallback, AfterAllCallback, TestInstancePostProcessor {
+public class ContainerIntegrationTestExtension implements BeforeAllCallback, AfterAllCallback, TestInstancePostProcessor, AfterEachCallback {
 
     private TestcontainersController controller;
 
@@ -67,6 +64,11 @@ public class ContainerIntegrationTestExtension implements BeforeAllCallback, Aft
             field.set(testInstance, restClient);
         }
 
+    }
+
+    @Override
+    public void afterEach(ExtensionContext context) throws Exception {
+        controller.resetWireMock();
     }
 
     @Override

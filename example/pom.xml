@@ -83,6 +83,7 @@
         <module>hello</module>
         <module>json</module>
         <module>custom</module>
+        <module>wiremock</module>
     </modules>
 
     <build>
