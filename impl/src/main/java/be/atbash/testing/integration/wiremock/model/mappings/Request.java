@@ -13,27 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package be.atbash.testing.integration.wiremock.model;
+package be.atbash.testing.integration.wiremock.model.mappings;
 
-class Mapping {
+class Request {
 
-    private Request request;
+    private String url;
 
-    private Response response;
+    private String method;
 
-    public Request getRequest() {
-        return request;
+    public String getUrl() {
+        return url;
     }
 
-    public void setRequest(Request request) {
-        this.request = request;
+    public void setUrl(String url) {
+        this.url = url;
     }
 
-    public Response getResponse() {
-        return response;
+    public String getMethod() {
+        return method;
     }
 
-    public void setResponse(Response response) {
-        this.response = response;
+    public void setMethod(String method) {
+        this.method = method;
     }
 }

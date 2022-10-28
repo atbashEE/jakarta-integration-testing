@@ -13,20 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package be.atbash.testing.integration.wiremock.model;
+package be.atbash.testing.integration.wiremock.model.mappings;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+class Mapping {
 
-class Headers {
+    private Request request;
 
-    @JsonProperty("Content-Type")
-    private String contentType;
+    private Response response;
 
-    public String getContentType() {
-        return contentType;
+    public Request getRequest() {
+        return request;
     }
 
-    public void setContentType(String contentType) {
-        this.contentType = contentType;
+    public void setRequest(Request request) {
+        this.request = request;
+    }
+
+    public Response getResponse() {
+        return response;
+    }
+
+    public void setResponse(Response response) {
+        this.response = response;
     }
 }

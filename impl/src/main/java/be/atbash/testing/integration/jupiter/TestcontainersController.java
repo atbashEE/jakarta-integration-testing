@@ -150,6 +150,6 @@ public class TestcontainersController {
     }
 
     public void resetWireMock() {
-        wireMockContainers.forEach(WireMockContainer::resetMapping);
+        wireMockContainers.forEach(WireMockContainer::resetConfigAndDeleteRequests);
     }
 }

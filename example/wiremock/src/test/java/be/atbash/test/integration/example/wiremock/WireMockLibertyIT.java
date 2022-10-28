@@ -19,7 +19,8 @@ import be.atbash.testing.integration.jupiter.ContainerIntegrationTest;
 import be.atbash.testing.integration.jupiter.SupportedRuntime;
 import be.atbash.testing.integration.test.AbstractContainerIntegrationTest;
 import be.atbash.testing.integration.wiremock.WireMockContainer;
-import be.atbash.testing.integration.wiremock.model.MappingBuilder;
+import be.atbash.testing.integration.wiremock.model.mappings.MappingBuilder;
+import be.atbash.testing.integration.wiremock.model.requests.RequestInfo;
 import org.assertj.core.api.Assertions;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.junit.jupiter.api.MethodOrderer;
@@ -46,10 +47,14 @@ public class WireMockLibertyIT extends AbstractContainerIntegrationTest {
     @Order(1)
     void testEndpoints() {
         MappingBuilder mappingBuilder = new MappingBuilder().forURL("/path").withBody(createTestDataObject());
-        wireMockContainer.configureResponse(mappingBuilder);
+        String mappingId = wireMockContainer.configureResponse(mappingBuilder);
 
         String value = testService.getValue();
         Assertions.assertThat(value).isEqualTo("Data[id=123, name='Atbash testing']");
+
+        // Test if we actually called the WireMock endpoint.
+        RequestInfo requestInfo = wireMockContainer.getRequestInfo(mappingId);
+        Assertions.assertThat(requestInfo).isNotNull();
 
     }
 

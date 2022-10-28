@@ -15,19 +15,29 @@
  */
 package be.atbash.testing.integration.wiremock;
 
-import be.atbash.testing.integration.wiremock.model.MappingBuilder;
+import be.atbash.testing.integration.wiremock.model.mappings.MappingBuilder;
+import be.atbash.testing.integration.wiremock.model.requests.RequestInfo;
+import be.atbash.testing.integration.wiremock.model.requests.server.Request;
+import be.atbash.testing.integration.wiremock.model.requests.server.Requests;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import org.eclipse.microprofile.rest.client.RestClientBuilder;
+import org.junit.Assert;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.utility.DockerImageName;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 public class WireMockContainer extends GenericContainer<WireMockContainer> {
 
     private WireMockAdminService wireMockAdminService;
+
+    private final ObjectMapper mapper = new ObjectMapper();
 
     private WireMockContainer(String hostName) {
         super(DockerImageName.parse("wiremock/wiremock:2.34.0"));
@@ -36,9 +46,17 @@ public class WireMockContainer extends GenericContainer<WireMockContainer> {
         addExposedPorts(8080);
     }
 
-    public void configureResponse(MappingBuilder mappingBuilder) {
+    public String configureResponse(MappingBuilder mappingBuilder) {
         initWireMockAdminService();
-        wireMockAdminService.submitMapping(mappingBuilder.build());
+        String response = wireMockAdminService.submitMapping(mappingBuilder.build());
+
+        try {
+            return mapper.readValue(response, Map.class).get("uuid").toString();
+        } catch (JsonProcessingException e) {
+            Assert.fail(e.getMessage());
+        }
+
+        return null;
     }
 
     private void initWireMockAdminService() {
@@ -55,9 +73,23 @@ public class WireMockContainer extends GenericContainer<WireMockContainer> {
 
     }
 
-    public void resetMapping() {
+    public void resetConfigAndDeleteRequests() {
         initWireMockAdminService();
         wireMockAdminService.resetMapping();
+        wireMockAdminService.deleteAllRequests();
+    }
+
+    public RequestInfo getRequestInfo(String mappingId) {
+        initWireMockAdminService();
+        Requests requestInfo = wireMockAdminService.getRequestInfo();
+        Optional<Request> optionalRequest = requestInfo.getRequests().stream()
+                .filter(r -> r.getStubMapping().getId().equals(mappingId))
+                .findAny();
+        if (optionalRequest.isEmpty()) {
+            return null;
+        }
+        Request request = optionalRequest.get();
+        return new RequestInfo(request.getRequest(), request.getResponse());
     }
 
     public static WireMockContainer forHost(String hostName) {

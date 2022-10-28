@@ -201,7 +201,7 @@ And defining the response for a certain URL call be done by using the following 
       .forURL("/path")
       .withBody(foo);
 
-   wireMockContainer.configureResponse(mappingBuilder);
+   String mappingId = wireMockContainer.configureResponse(mappingBuilder);
 ----
 
 Your method under test is then assumed to call a URL  `http://wire:8080/path` as part of its logic. You can use the MicroProfile config and Rest client functionality, supported by Payara Micro, OpenLiberty and WildFly, to call and configure this endpoint.
@@ -217,6 +217,8 @@ The `MappingBuilder` class has several methods to define the response of _WireMo
 - _.withContentType()_ can be used to define a specific _Content-Type_. You should use this _.withContentType()_ only after setting the body as that method already sets a specific _Content-Type_.
 
 After a test method is executed, the mapping configuration of the _WireMock_ server is reset so that you can test different scenarios within one test class.
+
+With the _mappingId_ value that is returned by the `configureResponse` method, you can retrieve information about the request received by _WireMock_.  The method `WirMockContainer.getRequestInfo()` method returns `null` when no request is received for that mapping, or some info if _WireMock_ received a request for that mapping.
 
 == Additional containers for a test (v1.1.0)
 

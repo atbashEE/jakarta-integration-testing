@@ -13,32 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package be.atbash.testing.integration.wiremock;
 
-import be.atbash.testing.integration.wiremock.model.requests.server.Requests;
+package be.atbash.testing.integration.wiremock.model.requests.server;
 
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
+import com.fasterxml.jackson.annotation.*;
 
-@Path("__admin")
-public interface WireMockAdminService {
+import java.util.HashMap;
+import java.util.Map;
 
-    @POST
-    @Path("/mappings")
-    String submitMapping(String body);
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class QueryParams {
 
-    @POST
-    @Path("/mappings/reset")
-    String resetMapping();
+    @JsonIgnore
+    private final Map<String, Object> parameters = new HashMap<>();
 
-    @DELETE
-    @Path("/requests")
-    String deleteAllRequests();
+    @JsonAnyGetter
+    public Map<String, Object> getParameters() {
+        return this.parameters;
+    }
 
-    @GET
-    @Path("/requests")
-    Requests getRequestInfo();
+    @JsonAnySetter
+    public void setParameter(String name, Object value) {
+        this.parameters.put(name, value);
+    }
 
 }

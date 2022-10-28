@@ -15,6 +15,7 @@
  */
 package be.atbash.testing.integration.wiremock.model;
 
+import be.atbash.testing.integration.wiremock.model.mappings.MappingBuilder;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 

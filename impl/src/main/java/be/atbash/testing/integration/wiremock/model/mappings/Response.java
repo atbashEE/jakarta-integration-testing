@@ -13,32 +13,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package be.atbash.testing.integration.wiremock;
+package be.atbash.testing.integration.wiremock.model.mappings;
 
-import be.atbash.testing.integration.wiremock.model.requests.server.Requests;
+class Response {
 
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
+    private Integer status;
 
-@Path("__admin")
-public interface WireMockAdminService {
+    private String body;
 
-    @POST
-    @Path("/mappings")
-    String submitMapping(String body);
+    private Headers headers;
 
-    @POST
-    @Path("/mappings/reset")
-    String resetMapping();
+    public Integer getStatus() {
+        return status;
+    }
 
-    @DELETE
-    @Path("/requests")
-    String deleteAllRequests();
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
 
-    @GET
-    @Path("/requests")
-    Requests getRequestInfo();
+    public String getBody() {
+        return body;
+    }
 
+    public void setBody(String body) {
+        this.body = body;
+    }
+
+    public Headers getHeaders() {
+        return headers;
+    }
+
+    public void setHeaders(Headers headers) {
+        this.headers = headers;
+    }
 }

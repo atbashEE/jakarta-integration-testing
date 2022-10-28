@@ -13,15 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package be.atbash.testing.integration.wiremock.model;
 
-class Response {
+package be.atbash.testing.integration.wiremock.model.requests.server;
 
+import com.fasterxml.jackson.annotation.*;
+
+import java.util.HashMap;
+import java.util.Map;
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonPropertyOrder({
+        "status",
+        "bodyAsBase64",
+        "body",
+        "headers"
+})
+public class Response {
+
+    @JsonProperty("status")
     private Integer status;
-
+    @JsonProperty("bodyAsBase64")
+    private String bodyAsBase64;
+    @JsonProperty("body")
     private String body;
-
+    @JsonProperty("headers")
     private Headers headers;
+    @JsonIgnore
+    private final Map<String, Object> additionalProperties = new HashMap<>();
 
     public Integer getStatus() {
         return status;
@@ -29,6 +47,14 @@ class Response {
 
     public void setStatus(Integer status) {
         this.status = status;
+    }
+
+    public String getBodyAsBase64() {
+        return bodyAsBase64;
+    }
+
+    public void setBodyAsBase64(String bodyAsBase64) {
+        this.bodyAsBase64 = bodyAsBase64;
     }
 
     public String getBody() {
@@ -46,4 +72,15 @@ class Response {
     public void setHeaders(Headers headers) {
         this.headers = headers;
     }
+
+    @JsonAnyGetter
+    public Map<String, Object> getAdditionalProperties() {
+        return this.additionalProperties;
+    }
+
+    @JsonAnySetter
+    public void setAdditionalProperty(String name, Object value) {
+        this.additionalProperties.put(name, value);
+    }
+
 }
