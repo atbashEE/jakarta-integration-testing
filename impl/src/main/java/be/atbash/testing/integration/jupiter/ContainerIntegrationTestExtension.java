@@ -16,8 +16,10 @@
 package be.atbash.testing.integration.jupiter;
 
 import be.atbash.testing.integration.container.AbstractIntegrationContainer;
+import be.atbash.testing.integration.test.AbstractContainerIntegrationTest;
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import org.eclipse.microprofile.rest.client.RestClientBuilder;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.extension.*;
 
 import java.lang.reflect.Field;
@@ -36,10 +38,21 @@ public class ContainerIntegrationTestExtension implements BeforeAllCallback, Aft
     public void beforeAll(ExtensionContext extensionContext) throws Exception {
 
         Class<?> testClass = extensionContext.getRequiredTestClass();
+        checkTestClass(testClass);
         metaData = ContainerAdapterMetaData.create(testClass);
         controller = new TestcontainersController(testClass);
         controller.config(metaData);
         controller.start();
+    }
+
+    private void checkTestClass(Class<?> testClass) {
+        if (!hasAbstractClass(testClass.getSuperclass())) {
+            Assertions.fail(String.format("The class '%s' annotated with @ContainerIntegrationTest must extend from '%s'", testClass.getName(), AbstractContainerIntegrationTest.class.getName()));
+        }
+    }
+
+    private boolean hasAbstractClass(Class<?> testClass) {
+        return AbstractContainerIntegrationTest.class.isAssignableFrom(testClass);
     }
 
     @Override
