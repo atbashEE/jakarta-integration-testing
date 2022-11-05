@@ -26,7 +26,7 @@ public class PayaraMicroDockerImageProducer extends DockerImageProducer {
 
     @Override
     public ImageFromDockerfile getImage(String warFileLocation, String version, String location) {
-        String fromImage = defineFromImageName("payara/micro", version, "5.2022.2-jdk11");
+        String fromImage = defineFromImageName("payara/micro", version, "5.2022.4-jdk11");
         String dockerFileContext = defineDockerfileContent(fromImage, location);
 
         try {

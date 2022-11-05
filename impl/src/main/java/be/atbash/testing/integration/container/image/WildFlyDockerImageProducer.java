@@ -26,7 +26,7 @@ public class WildFlyDockerImageProducer extends DockerImageProducer {
 
     @Override
     public ImageFromDockerfile getImage(String warFileLocation, String version, String location) {
-        String fromImage = defineFromImageName("quay.io/wildfly/wildfly", version, "26.1.1.Final");
+        String fromImage = defineFromImageName("quay.io/wildfly/wildfly", version, "26.1.2.Final");
         String dockerFileContext = defineDockerfileContent(fromImage, location);
 
         try {

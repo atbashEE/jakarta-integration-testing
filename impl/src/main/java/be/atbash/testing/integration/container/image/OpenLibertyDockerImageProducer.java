@@ -27,7 +27,7 @@ public class OpenLibertyDockerImageProducer extends DockerImageProducer {
 
     @Override
     public ImageFromDockerfile getImage(String warFileLocation, String version, String location) {
-        String fromImage = defineFromImageName("openliberty/open-liberty", version, "22.0.0.6-full-java11-openj9-ubi");
+        String fromImage = defineFromImageName("openliberty/open-liberty", version, "22.0.0.10-full-java11-openj9-ubi");
         String dockerFileContext = defineDockerfileContent(fromImage, location);
 
         try {

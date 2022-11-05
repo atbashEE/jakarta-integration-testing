@@ -115,9 +115,9 @@ But you also can define the runtime using a java system property. When you do no
 
 The value of the _SupportedRuntime_ determines the base Docker image from which the JUnit 5 extension creates an Image to perform the test.  These are the default values of those Docker images.
 
-- Payara Micro : `payara/micro:5.2022.2-jdk11`
-- OpenLiberty : `openliberty/open-liberty:22.0.0.6-full-java11-openj9-ubi`
-- WildFly : `quay.io/wildfly/wildfly:26.1.1.Final`
+- Payara Micro : `payara/micro:5.2022.4-jdk11`
+- OpenLiberty : `openliberty/open-liberty:22.0.0.10-full-java11-openj9-ubi`
+- WildFly : `quay.io/wildfly/wildfly:26.1.2.Final`
 - Glassfish : `airhacks/glassfish:5.1.0`
 
 You can use a different base docker image by defining a System Property.
@@ -127,6 +127,8 @@ You can use a different base docker image by defining a System Property.
 When you specify the System property `be.atbash.test.runtime.version`, it is used to determine the base Docker image.
 
 You can specify just the tagname to select the same Docker image but another version (like _5.2022.2_ for the Java 8 version of the Payara Micro image). When this value contains a `:` or `/`, it will be used as the value for the _FROM_ command in the Docker file. This allows you to use your own Docker image for testing your application.
+
+This is ignored when using a custom Docker build script.
 
 == Custom Docker Build scripts (v1.1.0)
 
