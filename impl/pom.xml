@@ -32,8 +32,8 @@
     <name>Integration Testing with Testcontainers for Jakarta EE runtimes</name>
 
     <properties>
-        <junit.version>5.8.2</junit.version>
-        <testcontainers.version>1.17.4</testcontainers.version>
+        <junit.version>5.9.1</junit.version>
+        <testcontainers.version>1.17.5</testcontainers.version>
         <apache.cxf.version>3.5.3</apache.cxf.version>
         <jackson.version>2.13.4</jackson.version>
 
@@ -63,6 +63,14 @@
             <artifactId>junit-jupiter</artifactId>
             <version>${testcontainers.version}</version>
         </dependency>
+
+        <dependency>
+            <!-- Force version of Jackson databind to a patch version that doesn't have the security vulnerability -->
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.13.4.2</version>
+        </dependency>
+        <!-- Also woodstox-core has a security vulnerability but not using th XML functionality of jackson. -->
 
         <!-- To call our endpoints based on MiroProfile Rest Client and an interface.  -->
         <dependency>
