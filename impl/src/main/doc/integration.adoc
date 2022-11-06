@@ -1,7 +1,7 @@
 :doctype: book
 = Integration testing for Jakarta EE
 Rudy De Busscher <rdebusscher@gmail.com>
-v1.1.0, ??/??/2022
+v1.1.0, 06/11/2022
 
 == Release notes
 
@@ -10,6 +10,7 @@ v1.1.0, ??/??/2022
 . Added support for custom Docker build scripts.
 . Easier for using additional containers that are used by the application under test (microservices set-up)
 . Using _WireMock_ for providing responses of remote services.
+. Update version of Jakarta runtimes.
 
 === 1.0.0
 
