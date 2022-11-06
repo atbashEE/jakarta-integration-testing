@@ -76,6 +76,9 @@ public abstract class DockerImageProducer {
     }
 
     protected String loadOptionalDockerFile(String location) {
+        if (location == null) {
+            return null;
+        }
 
         Path path = Path.of(location, DOCKERFILE);
         if (path.toFile().exists()) {

@@ -32,11 +32,6 @@
     <name>Integration Testing Examples with Testcontainers for Jakarta EE runtimes</name>
     <packaging>pom</packaging>
 
-    <properties>
-        <junit.version>5.8.2</junit.version>
-
-    </properties>
-
     <dependencies>
 
         <dependency>
@@ -46,11 +41,11 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- Junit Jupiter dependency -->
+        <!-- Test framework -->
         <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter</artifactId>
-            <version>${junit.version}</version>
+            <groupId>be.atbash.test</groupId>
+            <artifactId>integration-testing</artifactId>
+            <version>${project.parent.version}</version>
             <scope>test</scope>
         </dependency>
 
@@ -58,14 +53,6 @@
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
             <version>3.23.1</version>
-            <scope>test</scope>
-        </dependency>
-
-        <!-- Test framework -->
-        <dependency>
-            <groupId>be.atbash.test</groupId>
-            <artifactId>integration-testing</artifactId>
-            <version>${project.parent.version}</version>
             <scope>test</scope>
         </dependency>
 
