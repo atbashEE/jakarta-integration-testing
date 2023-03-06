@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Rudy De Busscher (https://www.atbash.be)
+ * Copyright 2022-2023 Rudy De Busscher (https://www.atbash.be)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,4 +56,12 @@ public @interface ContainerIntegrationTest {
      * @return Mapping pairs for the volume mapping.
      */
     String[] volumeMapping() default "";
+
+    /**
+     * Defines where the .war file will be searched. By default, it looks into the target
+     * directory of the module itself. Users can specify a location that will be searched.
+     *
+     * @return Location where application is searched.
+     */
+    String applicationLocation() default "target";
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Rudy De Busscher (https://www.atbash.be)
+ * Copyright 2022-2023 Rudy De Busscher (https://www.atbash.be)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 package be.atbash.testing.integration.jupiter;
 
 import be.atbash.testing.integration.container.exception.LocationNotFoundException;
+import be.atbash.testing.integration.container.exception.UnexpectedException;
 import be.atbash.testing.integration.container.image.CustomBuildFile;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.junit.jupiter.api.Assertions;
@@ -28,6 +29,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -98,12 +100,25 @@ public class ContainerAdapterMetaData {
 
         result.supportedRuntime = determineRuntime(containerIntegrationTest.runtime());
         result.port = determinePort(result.supportedRuntime);
-        result.warFileLocation = findAppFile().getAbsolutePath();
+        result.warFileLocation = findAppFile(getLocation(containerIntegrationTest)).getAbsolutePath();
         result.volumeMapping = defineVolumeMappings(containerIntegrationTest.volumeMapping());
 
         result.restClientFields = AnnotationSupport.findAnnotatedFields(testClass, RestClient.class);
 
         return result;
+    }
+
+    private static String getLocation(ContainerIntegrationTest containerIntegrationTest) {
+        String result = containerIntegrationTest.applicationLocation();
+        if (!"target".equals(result) && !isAbsolutePath(result)) {
+            result = "../" + result;  // Go one level up to look in another maven module
+        }
+        return result;
+    }
+
+    private static boolean isAbsolutePath(String pathString) {
+        Path path = Paths.get(pathString);
+        return path.isAbsolute();
     }
 
     private static String determineCustomBuildDirectory(Class<?> testClass) {
@@ -151,12 +166,20 @@ public class ContainerAdapterMetaData {
         return result;
     }
 
-    private static File findAppFile() {
+    private static File findAppFile(String applicationLocation) {
+
+        File dir = new File(applicationLocation);
 
         // Find a .war file in the target/ directories
-        Set<File> matches = new HashSet<>(findAppFiles("target"));
+        Set<File> matches = new HashSet<>(findAppFiles(dir));
         if (matches.size() == 0) {
-            throw new IllegalStateException("No .war files found in target / output folders.");
+
+            try {
+                throw new IllegalStateException(String.format("No .war files found in folder (including sub folders) %s.", dir.getCanonicalPath()));
+            } catch (IOException e) {
+
+                throw new UnexpectedException("Exception during File.getCanonicalPath()", e);
+            }
         }
         if (matches.size() > 1) {
             throw new IllegalStateException("Found multiple application files in target output folders: " + matches +
@@ -173,12 +196,11 @@ public class ContainerAdapterMetaData {
      * @param path The top level directory to start the search
      * @return The set of files found matching the file type.
      */
-    private static Set<File> findAppFiles(String path) {
-        File dir = new File(path);
-        if (dir.exists() && dir.isDirectory()) {
+    private static Set<File> findAppFiles(File path) {
+        if (path.exists() && path.isDirectory()) {
             try {
                 Set<File> result;
-                try (Stream<Path> pathStream = Files.walk(dir.toPath())) {
+                try (Stream<Path> pathStream = Files.walk(path.toPath())) {
                     result = pathStream
                             .filter(Files::isRegularFile)
                             .filter(p -> p.toString().toLowerCase().endsWith(".war"))

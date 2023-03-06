@@ -1,9 +1,13 @@
 :doctype: book
 = Integration testing for Jakarta EE
 Rudy De Busscher <rdebusscher@gmail.com>
-v1.1.0, 06/11/2022
+v1.2.0, ??/??/2023
 
 == Release notes
+
+=== 1.2.0
+
+. WAR file can be searched in other directories than _target_, include some path outside of the project with `applicationLocation`member of the test annotation.
 
 === 1.1.0
 
@@ -248,6 +252,28 @@ You can use the classes `PayaraMicroContainer`, `OpenLibertyContainer`, 'Wildfly
 - The variable name is added as alias host to the container so that the endpoints in this additional container can be accessed through a consistent, constant host name.
 
 There is of course no need that the runtime of the container running your test is the same as the additional containers you start for your application.
+
+== Define directory of WAR file (v1.2.0)
+
+From version 1.2.0 onwards, you can define the directory where the WAR file is located. By default, it still looks i the target folder of your Maven project. But with the `applicationLocation` member of the annotation, you can define another location.
+
+This can be another module of a multi-module Maven project or an absolute path.
+
+[source, java]
+----
+@ContainerIntegrationTest(runtime = SupportedRuntime.PAYARA_MICRO, applicationLocation = "app")
+class ApplicationTest extends AbstractContainerIntegrationTest {
+
+}
+----
+
+The above example looks within the module directory _app_ and the tests can be in then module _tests_.
+
+----
+project
+|-- app
+`-- tests
+----
 
 == Jakarta runtime specifics
 
