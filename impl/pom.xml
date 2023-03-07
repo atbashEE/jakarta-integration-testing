@@ -34,8 +34,8 @@
     <properties>
         <junit.version>5.9.1</junit.version>
         <testcontainers.version>1.17.5</testcontainers.version>
-        <apache.cxf.version>3.5.3</apache.cxf.version>
-        <jackson.version>2.13.4</jackson.version>
+        <apache.cxf.version>4.0.0</apache.cxf.version>
+        <jackson.version>2.14.2</jackson.version>
 
         <asciidoctor.maven.plugin.version>2.2.1</asciidoctor.maven.plugin.version>
         <asciidoctorj.pdf.version>1.6.2</asciidoctorj.pdf.version>
@@ -81,8 +81,8 @@
 
         <!-- Support for JSON in our test calls -->
         <dependency>
-            <groupId>com.fasterxml.jackson.jaxrs</groupId>
-            <artifactId>jackson-jaxrs-json-provider</artifactId>
+            <groupId>com.fasterxml.jackson.jakarta.rs</groupId>
+            <artifactId>jackson-jakarta-rs-json-provider</artifactId>
             <version>${jackson.version}</version>
         </dependency>
         <dependency>

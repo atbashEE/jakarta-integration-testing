@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Rudy De Busscher (https://www.atbash.be)
+ * Copyright 2022-2023 Rudy De Busscher (https://www.atbash.be)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,9 +34,6 @@ public class ContainerFactory {
                 break;
             case WILDFLY:
                 result = new WildflyContainer(metaData);
-                break;
-            case GLASSFISH:
-                result = new GlassfishContainer(metaData);
                 break;
             default:
                 throw new IllegalArgumentException(String.format("Unsupported value %s of SupportedRuntime", metaData.getSupportedRuntime()));

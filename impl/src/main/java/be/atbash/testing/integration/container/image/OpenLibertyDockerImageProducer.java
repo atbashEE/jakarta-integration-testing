@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Rudy De Busscher (https://www.atbash.be)
+ * Copyright 2022-2023 Rudy De Busscher (https://www.atbash.be)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ public class OpenLibertyDockerImageProducer extends DockerImageProducer {
 
     @Override
     public ImageFromDockerfile getImage(String warFileLocation, String version, String location) {
+        // FIXME We need the Docker iage for the Jakarta EE 10 version which is not yet available.
         String fromImage = defineFromImageName("openliberty/open-liberty", version, "22.0.0.10-full-java11-openj9-ubi");
         String dockerFileContext = defineDockerfileContent(fromImage, location);
 

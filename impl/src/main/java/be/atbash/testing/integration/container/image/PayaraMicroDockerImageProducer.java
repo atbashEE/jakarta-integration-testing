@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Rudy De Busscher (https://www.atbash.be)
+ * Copyright 2022-2023 Rudy De Busscher (https://www.atbash.be)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ public class PayaraMicroDockerImageProducer extends DockerImageProducer {
 
     @Override
     public ImageFromDockerfile getImage(String warFileLocation, String version, String location) {
-        String fromImage = defineFromImageName("payara/micro", version, "5.2022.4-jdk11");
+        String fromImage = defineFromImageName("payara/micro", version, "6.2023.2");
         String dockerFileContext = defineDockerfileContent(fromImage, location);
 
         try {

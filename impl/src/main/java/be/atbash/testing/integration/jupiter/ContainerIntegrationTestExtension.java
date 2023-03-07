@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Rudy De Busscher (https://www.atbash.be)
+ * Copyright 2022-2023 Rudy De Busscher (https://www.atbash.be)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@ package be.atbash.testing.integration.jupiter;
 
 import be.atbash.testing.integration.container.AbstractIntegrationContainer;
 import be.atbash.testing.integration.test.AbstractContainerIntegrationTest;
-import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
+import com.fasterxml.jackson.jakarta.rs.json.JacksonJsonProvider;
 import org.eclipse.microprofile.rest.client.RestClientBuilder;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.extension.*;
@@ -60,7 +60,7 @@ public class ContainerIntegrationTestExtension implements BeforeAllCallback, Aft
         AbstractIntegrationContainer<?> container = controller.getApplicationTestContainer();
 
         String root = "";
-        if (metaData.getSupportedRuntime() == SupportedRuntime.WILDFLY || metaData.getSupportedRuntime() == SupportedRuntime.GLASSFISH) {
+        if (metaData.getSupportedRuntime() == SupportedRuntime.WILDFLY ) {
             // putting apps in /deployments directory of Wildfly uses the file name as root.
             // TODO Check if this is a problem for cross runtime compatibility. (for example when having multiple microservices)
             root = "/test";

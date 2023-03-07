@@ -1,2 +1,2 @@
-FROM payara/micro:5.2022.2-jdk11
+FROM payara/micro:6.2023.2
 COPY content.txt /opt/content.txt

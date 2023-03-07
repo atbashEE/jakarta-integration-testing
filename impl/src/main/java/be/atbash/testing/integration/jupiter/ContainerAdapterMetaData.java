@@ -144,7 +144,6 @@ public class ContainerAdapterMetaData {
 
             case PAYARA_MICRO:
             case WILDFLY:
-            case GLASSFISH:
                 port = 8080;
                 break;
             case OPEN_LIBERTY:

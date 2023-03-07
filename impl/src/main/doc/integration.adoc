@@ -8,6 +8,7 @@ v2.2.0, ??/??/2023
 === 2.2.0
 
 . Jakarta EE 10 based.
+. Dropped Support for Glassfish (as there is no Docker image available in public repository).
 
 === 1.2.0
 
@@ -40,7 +41,7 @@ This integration testing framework is designed to work with Jakarta Runtimes, Ja
 - Payara Micro - https://www.payara.fish/[website]
 - OpenLiberty - https://openliberty.io/[website]
 - Wildfly - https://www.wildfly.org/[website]
-- Glassfish - https://glassfish.org/[website] - Limited support, see further on
+- Glassfish - No useable Docker image available on dockerHub.
 
 == Configuration
 
@@ -124,10 +125,9 @@ But you also can define the runtime using a java system property. When you do no
 
 The value of the _SupportedRuntime_ determines the base Docker image from which the JUnit 5 extension creates an Image to perform the test.  These are the default values of those Docker images.
 
-- Payara Micro : `payara/micro:5.2022.4-jdk11`
-- OpenLiberty : `openliberty/open-liberty:22.0.0.10-full-java11-openj9-ubi`
-- WildFly : `quay.io/wildfly/wildfly:26.1.2.Final`
-- Glassfish : `airhacks/glassfish:5.1.0`
+- Payara Micro : `payara/micro:6.2023.2`
+- OpenLiberty : Not available yet
+- WildFly : `quay.io/wildfly/wildfly:27.0.0.Final-jdk11`
 
 You can use a different base docker image by defining a System Property.
 
@@ -135,7 +135,7 @@ You can use a different base docker image by defining a System Property.
 
 When you specify the System property `be.atbash.test.runtime.version`, it is used to determine the base Docker image.
 
-You can specify just the tagname to select the same Docker image but another version (like _5.2022.2_ for the Java 8 version of the Payara Micro image). When this value contains a `:` or `/`, it will be used as the value for the _FROM_ command in the Docker file. This allows you to use your own Docker image for testing your application.
+You can specify just the tagname to select the same Docker image but another version (like _6.2023.2-jdk17_ for the Java 17 version of the Payara Micro image). When this value contains a `:` or `/`, it will be used as the value for the _FROM_ command in the Docker file. This allows you to use your own Docker image for testing your application.
 
 This is ignored when using a custom Docker build script.
 

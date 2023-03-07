@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Rudy De Busscher (https://www.atbash.be)
+ * Copyright 2022-2023 Rudy De Busscher (https://www.atbash.be)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ public class WildFlyDockerImageProducer extends DockerImageProducer {
 
     @Override
     public ImageFromDockerfile getImage(String warFileLocation, String version, String location) {
-        String fromImage = defineFromImageName("quay.io/wildfly/wildfly", version, "26.1.2.Final");
+        String fromImage = defineFromImageName("quay.io/wildfly/wildfly", version, "27.0.0.Final-jdk11");
         String dockerFileContext = defineDockerfileContent(fromImage, location);
 
         try {

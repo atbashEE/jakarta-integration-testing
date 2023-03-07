@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Rudy De Busscher (https://www.atbash.be)
+ * Copyright 2022-2023 Rudy De Busscher (https://www.atbash.be)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,9 +24,9 @@ import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.junit.jupiter.api.Test;
 
 
-@ContainerIntegrationTest(runtime = SupportedRuntime.WILDFLY)
-@CustomBuildFile(location = "custom/wildfly")
-public class HelloWildflyIT extends AbstractContainerIntegrationTest {
+@ContainerIntegrationTest(runtime = SupportedRuntime.OPEN_LIBERTY)
+@CustomBuildFile(location = "custom/liberty")
+public class CustomLibertyIT extends AbstractContainerIntegrationTest {
     // Should be public and not the JUnit 5 preferred scope package.
 
     @RestClient
@@ -35,6 +35,6 @@ public class HelloWildflyIT extends AbstractContainerIntegrationTest {
     @Test
     void getFileContent() {
         String value = customService.getFileContent();
-        Assertions.assertThat(value).isEqualTo("Wildfly content file");
+        Assertions.assertThat(value).isEqualTo("OpenLiberty content file");
     }
 }

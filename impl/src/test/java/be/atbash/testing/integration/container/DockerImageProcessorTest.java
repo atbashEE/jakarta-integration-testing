@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Rudy De Busscher (https://www.atbash.be)
+ * Copyright 2022-2023 Rudy De Busscher (https://www.atbash.be)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,7 +59,7 @@ class DockerImageProcessorTest {
         // Check content
         String dockerFileContent = String.join("\n", Files.readAllLines(image.getDockerfile().get()));
 
-        Assertions.assertThat(dockerFileContent).isEqualTo("FROM payara/micro:5.2022.2-jdk11\n" +
+        Assertions.assertThat(dockerFileContent).isEqualTo("FROM payara/micro:6.2023.2\n" +
                 "CMD [\"--deploy\", \"/opt/payara/deployments/test.war\", \"--noCluster\",  \"--contextRoot\", \"/\"]\n" +
                 "ADD test.war /opt/payara/deployments ");
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Rudy De Busscher (https://www.atbash.be)
+ * Copyright 2022-2023 Rudy De Busscher (https://www.atbash.be)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,13 +39,11 @@ public class DockerImageProcessor {
                 result = new PayaraMicroDockerImageProducer();
                 break;
             case OPEN_LIBERTY:
-                result = new OpenLibertyDockerImageProducer();
-                break;
+                //result = new OpenLibertyDockerImageProducer();
+                throw new IllegalArgumentException("OpenLiberty is not yet supported"); // FIXME
+
             case WILDFLY:
                 result = new WildFlyDockerImageProducer();
-                break;
-            case GLASSFISH:
-                result = new GlassfishDockerImageProducer();
                 break;
             default:
                 throw new IllegalArgumentException(String.format("Unknown Supported runtime %s", supportedRuntime));
