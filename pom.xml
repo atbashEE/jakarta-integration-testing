@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright 2022 Rudy De Busscher (https://www.atbash.be)
+    Copyright 2022-2023 Rudy De Busscher (https://www.atbash.be)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -50,11 +50,14 @@
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <testcontainers.version>1.17.5</testcontainers.version>
     </properties>
 
 
     <modules>
         <module>impl</module>
+        <module>database</module>
         <module>example</module>
     </modules>
 

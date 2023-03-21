@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Rudy De Busscher (https://www.atbash.be)
+ * Copyright 2022-2023 Rudy De Busscher (https://www.atbash.be)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,10 +41,10 @@ import java.util.Set;
  */
 public class TestcontainersController {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(TestcontainersController.class);
+    protected final Logger LOGGER = LoggerFactory.getLogger(TestcontainersController.class);
 
-    private final Set<GenericContainer<?>> containers = new HashSet<>();
-    private final Set<WireMockContainer> wireMockContainers = new HashSet<>();
+    protected final Set<GenericContainer<?>> containers = new HashSet<>();
+    protected final Set<WireMockContainer> wireMockContainers = new HashSet<>();
     private final Class<?> testClass;
     private Field runtimeContainerField;
 
@@ -56,7 +56,7 @@ public class TestcontainersController {
 
     }
 
-    protected void discoverContainers(Class<?> clazz) {
+    private void discoverContainers(Class<?> clazz) {
 
         for (Field containerField : AnnotationSupport.findAnnotatedFields(clazz, Container.class)) {
             if (!Modifier.isPublic(containerField.getModifiers())) {
@@ -130,23 +130,39 @@ public class TestcontainersController {
 
     public void start() {
 
+        showContainerNames();
+
+        long start = System.currentTimeMillis();
+        startContainers();
+        LOGGER.info("All containers started in " + (System.currentTimeMillis() - start) + "ms");
+    }
+
+    protected void startContainers() {
+        containers.parallelStream().forEach(GenericContainer::start);
+    }
+
+    protected void showContainerNames(String... additionalContainerNames) {
         LOGGER.info("Starting containers in parallel for " + testClass);
+        for (String name : additionalContainerNames) {
+            LOGGER.info("  " + name);
+        }
         for (GenericContainer<?> c : containers) {
             LOGGER.info("  " + c.getImage());
         }
-        long start = System.currentTimeMillis();
-        containers.parallelStream().forEach(GenericContainer::start);
-        LOGGER.info("All containers started in " + (System.currentTimeMillis() - start) + "ms");
     }
 
 
     public void stop() throws IllegalAccessException {
         // Stop all Containers in the AfterAll phase. Some containers can already be stopped by the AfterEach.
         long start = System.currentTimeMillis();
-        containers.parallelStream().forEach(GenericContainer::stop);
+        stopContainers();
         LOGGER.info("All containers stopped in " + (System.currentTimeMillis() - start) + "ms");
         runtimeContainerField.set(null, null);
 
+    }
+
+    protected void stopContainers() throws IllegalAccessException {
+        containers.parallelStream().forEach(GenericContainer::stop);
     }
 
     public void resetWireMock() {

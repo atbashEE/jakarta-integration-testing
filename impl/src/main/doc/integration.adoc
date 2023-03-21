@@ -8,6 +8,7 @@ v1.2.0, ??/??/2023
 === 1.2.0
 
 . WAR file can be searched in other directories than _target_, include some path outside of the project with `applicationLocation`member of the test annotation.
+. Support for testing applications that access a database.
 
 === 1.1.0
 
@@ -226,6 +227,56 @@ The `MappingBuilder` class has several methods to define the response of _WireMo
 After a test method is executed, the mapping configuration of the _WireMock_ server is reset so that you can test different scenarios within one test class.
 
 With the _mappingId_ value that is returned by the `configureResponse` method, you can retrieve information about the request received by _WireMock_.  The method `WirMockContainer.getRequestInfo()` method returns `null` when no request is received for that mapping, or some info if _WireMock_ received a request for that mapping.
+
+== Using Database (v1.2.0)
+
+When your application or micro-service makes use of a database through JPA, you can configure the integration test to have a database started before the test with a know state.  The settings for the database connections are placed as environment variables of the test application container.
+
+The feature can be activated by using the `@DatabaseContainerIntegrationTest` annotation on a test class that extends `AbstractDatabaseContainerIntegrationTest` class.
+
+Also, a database container must be added to the project dependencies. The database is discovered automatically and functionality is adapted according to the discovered database.
+For example, the following dependency
+
+[source]
+----
+    <dependency>
+        <groupId>org.testcontainers</groupId>
+        <artifactId>mysql</artifactId>
+        <version>1.17.5</version>
+        <scope>test</scope>
+    </dependency>
+----
+
+triggers the support for MySQL. Other supported databases are PostgresSQL, MariaDB and Oracle XE.
+
+The `@DatabaseContainerIntegrationTest` annotation allows for several configuration options. At a minimum, the `ContainerIntegrationTest` must be specified, as with any Jakarta Integration test.
+
+[source]
+----
+@DatabaseContainerIntegrationTest(
+        containerIntegrationTest = @ContainerIntegrationTest(runtime = SupportedRuntime.PAYARA_MICRO)
+)
+----
+
+Other options are
+
+- _environmentParametersForDatabase_ defines the environment variables names that are used to transfer the JDBC URL, username and password for the database.
+- _databaseScriptFiles_ defines the file names that are loaded from the class path to create the database tables and the Excel file that contains the data (records) that will be loaded for the test (through DBUnit).
+- _databaseContainerImageName_ defines the Docker image name if you do not want to make use of the default image that comes with the dependency.
+- _databaseContainerStartInParallel_ defines if the database starts in parallel with the other containers or separately as the first container.
+
+TODO : Explain for each runtime how the configuration can be done so that the integration test with a database works.
+
+Besides the start of the database container when the container running your application starts, it provides you also a way query the database during the test itself.
+
+For that purpose, a  `IDatabaseConnection` from DBUnit is accessible to test the changes that should be done by the application code during te test.
+
+[source]
+----
+        ITable companyTable = databaseConnection.createQueryTable("company", "SELECT id, name FROM Company");
+----
+
+The above statement retrieves all records in the _Company_ table that can be used to verify if the call to an endpoint of the application created a new record as intended.
 
 == Additional containers for a test (v1.1.0)
 
