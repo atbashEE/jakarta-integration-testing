@@ -50,11 +50,14 @@
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <testcontainers.version>1.17.5</testcontainers.version>
     </properties>
 
 
     <modules>
         <module>impl</module>
+        <module>database</module>
         <module>example</module>
     </modules>
 

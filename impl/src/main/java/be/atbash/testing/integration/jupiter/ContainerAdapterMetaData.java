@@ -18,9 +18,7 @@ package be.atbash.testing.integration.jupiter;
 import be.atbash.testing.integration.container.exception.LocationNotFoundException;
 import be.atbash.testing.integration.container.exception.UnexpectedException;
 import be.atbash.testing.integration.container.image.CustomBuildFile;
-import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.junit.jupiter.api.Assertions;
-import org.junit.platform.commons.support.AnnotationSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -89,21 +87,22 @@ public class ContainerAdapterMetaData {
         return restClientFields;
     }
 
-    public static ContainerAdapterMetaData create(Class<?> testClass) {
+    public static ContainerAdapterMetaData create(ContainerIntegrationTest containerIntegrationTest, List<Field> restClientFields, CustomBuildFile customBuildFileAnnotation) {
         ContainerAdapterMetaData result = new ContainerAdapterMetaData();
 
-        ContainerIntegrationTest containerIntegrationTest = testClass.getAnnotation(ContainerIntegrationTest.class);
         result.debug = containerIntegrationTest.debug();
         result.liveLogging = containerIntegrationTest.liveLogging();
 
-        result.customBuildDirectory = determineCustomBuildDirectory(testClass);
+        if (customBuildFileAnnotation != null) {
+            result.customBuildDirectory = determineCustomBuildDirectory(customBuildFileAnnotation);
+        }
 
         result.supportedRuntime = determineRuntime(containerIntegrationTest.runtime());
         result.port = determinePort(result.supportedRuntime);
         result.warFileLocation = findAppFile(getLocation(containerIntegrationTest)).getAbsolutePath();
         result.volumeMapping = defineVolumeMappings(containerIntegrationTest.volumeMapping());
 
-        result.restClientFields = AnnotationSupport.findAnnotatedFields(testClass, RestClient.class);
+        result.restClientFields = restClientFields;
 
         return result;
     }
@@ -121,9 +120,8 @@ public class ContainerAdapterMetaData {
         return path.isAbsolute();
     }
 
-    private static String determineCustomBuildDirectory(Class<?> testClass) {
+    private static String determineCustomBuildDirectory(CustomBuildFile customBuildFileAnnotation) {
         String result = null;
-        CustomBuildFile customBuildFileAnnotation = testClass.getAnnotation(CustomBuildFile.class);
         if (customBuildFileAnnotation != null && !customBuildFileAnnotation.location().isBlank()) {
             result = customBuildFileAnnotation.location().trim();
             String location = "./src/docker/" + (result.startsWith("/") ? result.substring(1) : result);
