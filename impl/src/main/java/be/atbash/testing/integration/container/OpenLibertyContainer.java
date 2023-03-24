@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Rudy De Busscher (https://www.atbash.be)
+ * Copyright 2022-2023 Rudy De Busscher (https://www.atbash.be)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,8 @@ public class OpenLibertyContainer extends AbstractIntegrationContainer<OpenLiber
 
     public OpenLibertyContainer(ContainerAdapterMetaData metaData) {
 
-        super(DockerImageProcessor.getImage(SupportedRuntime.OPEN_LIBERTY, metaData.getWarFileLocation(), metaData.getCustomBuildDirectory()));
+        super(DockerImageProcessor.getImage(SupportedRuntime.OPEN_LIBERTY, metaData.getWarFileLocation(), metaData.getCustomBuildDirectory())
+                , metaData.isLiveLogging());
         withExposedPorts(metaData.getPort());
 
         // Health point of Payara Micro based on MicroProfile Health

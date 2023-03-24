@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Rudy De Busscher (https://www.atbash.be)
+ * Copyright 2022-2023 Rudy De Busscher (https://www.atbash.be)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ import org.testcontainers.utility.DockerImageName;
 public class WildflyContainer extends AbstractIntegrationContainer<WildflyContainer> {
 
     public WildflyContainer(ContainerAdapterMetaData metaData) {
-        super(DockerImageProcessor.getImage(SupportedRuntime.WILDFLY, metaData.getWarFileLocation(), metaData.getCustomBuildDirectory()));
+        super(DockerImageProcessor.getImage(SupportedRuntime.WILDFLY, metaData.getWarFileLocation(), metaData.getCustomBuildDirectory()), metaData.isLiveLogging());
         withExposedPorts(metaData.getPort(), 9990);
         // port 9990 for the management where health is
 

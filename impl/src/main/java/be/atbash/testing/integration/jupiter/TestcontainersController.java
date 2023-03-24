@@ -27,7 +27,6 @@ import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
-import org.testcontainers.containers.output.Slf4jLogConsumer;
 import org.testcontainers.junit.jupiter.Container;
 
 import java.lang.reflect.Field;
@@ -103,10 +102,6 @@ public class TestcontainersController {
         // ContainerAdapterMetaData determine the container which will be used.
         applicationTestContainer = new ContainerFactory().createContainer(metaData);
 
-        if (metaData.isLiveLogging()) {
-            Slf4jLogConsumer logConsumer = new Slf4jLogConsumer(LOGGER);
-            applicationTestContainer.followOutput(logConsumer);  // Show log of container in output.
-        }
         defineVolumeMapping(metaData.getVolumeMapping());
 
         try {
