@@ -49,8 +49,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class DatabaseTestcontainersController extends TestcontainersController {
 
     private final JdbcDatabaseContainer<?> jdbcDatabaseContainer;
-    private final SupportedDatabase database;
-    private final DatabaseContainerIntegrationTest containerIntegrationTest;
+
+    private final DatabaseContainerAdapterMetaData databaseContainerMetaData;
 
     private IDataSet dataSet;
 
@@ -60,11 +60,10 @@ public class DatabaseTestcontainersController extends TestcontainersController {
     private Field databaseContainerField;
 
     public DatabaseTestcontainersController(Class<?> testClass, JdbcDatabaseContainer<?> jdbcDatabaseContainer
-            , SupportedDatabase database, DatabaseContainerIntegrationTest containerIntegrationTest) {
+            , DatabaseContainerAdapterMetaData databaseContainerMetaData) {
         super(testClass);
         this.jdbcDatabaseContainer = jdbcDatabaseContainer;
-        this.database = database;
-        this.containerIntegrationTest = containerIntegrationTest;
+        this.databaseContainerMetaData = databaseContainerMetaData;
     }
 
     @Override
@@ -75,16 +74,12 @@ public class DatabaseTestcontainersController extends TestcontainersController {
         jdbcDatabaseContainer.setNetwork(Network.SHARED);
         jdbcDatabaseContainer.withNetworkAliases(dbHostName);
 
-        if (metaData.isLiveLogging()) {
-            Slf4jLogConsumer logConsumer = new Slf4jLogConsumer(LOGGER);
-            jdbcDatabaseContainer.followOutput(logConsumer);  // Show log of container in output.
-        }
-
         // We define ourselves the JDBC URL as testContainers give the version to access it 'outside' the shared
         // network. But we need to URL to access it from 'inside' the network.
-        String jdbcUrl = String.format(database.getJdbcURLTemplate(),
+        String jdbcUrl = String.format(databaseContainerMetaData.getDatabase().getJdbcURLTemplate(),
                 dbHostName, jdbcDatabaseContainer.getExposedPorts().get(0));
 
+        DatabaseContainerIntegrationTest containerIntegrationTest = databaseContainerMetaData.getDatabaseContainerIntegrationTest();
         AbstractIntegrationContainer<?> applicationContainer = getApplicationTestContainer();
         applicationContainer.withEnv(containerIntegrationTest.environmentParametersForDatabase().jdbcURL(), jdbcUrl);
         applicationContainer.withEnv(containerIntegrationTest.environmentParametersForDatabase().username(), jdbcDatabaseContainer.getUsername());
@@ -114,7 +109,7 @@ public class DatabaseTestcontainersController extends TestcontainersController {
 
             // We can only access the Database container after it is started.
             // But this start() s part of beforeAll and thus before PostProcessTestInstance needs it.
-            connection = database.getConnectionSupplier().create(jdbcDatabaseContainer);
+            connection = databaseContainerMetaData.getDatabase().getConnectionSupplier().create(jdbcDatabaseContainer);
 
         } catch (Throwable e) {
             // The next statement handles the error.
@@ -143,7 +138,7 @@ public class DatabaseTestcontainersController extends TestcontainersController {
     private void manageStartDatabaseContainer(CountDownLatch startSignal, AtomicBoolean failure) {
         FailureCallback callback = () -> failure.set(true);
 
-        if (containerIntegrationTest.databaseContainerStartInParallel()) {
+        if (databaseContainerMetaData.getDatabaseContainerIntegrationTest().databaseContainerStartInParallel()) {
             Runnable task = () -> startAndPrepareDatabaseContainer(startSignal, callback);
             new Thread(task).start();
         } else {
@@ -157,7 +152,7 @@ public class DatabaseTestcontainersController extends TestcontainersController {
 
             JdbcDatabaseDelegate delegate = new JdbcDatabaseDelegate(jdbcDatabaseContainer, "");
 
-            String createTables = containerIntegrationTest.databaseScriptFiles().createTables();
+            String createTables = databaseContainerMetaData.getDatabaseContainerIntegrationTest().databaseScriptFiles().createTables();
             String script = getClassPathFileContent(createTables);
 
             try {
@@ -167,7 +162,7 @@ public class DatabaseTestcontainersController extends TestcontainersController {
                 throw new RuntimeException(e);
             }
 
-            String dataFile = containerIntegrationTest.databaseScriptFiles().initData();
+            String dataFile = databaseContainerMetaData.getDatabaseContainerIntegrationTest().databaseScriptFiles().initData();
             URL testDataFile = DatabaseTestcontainersController.class.getClassLoader().getResource(dataFile);
             if (testDataFile == null) {
                 throw new FileNotFoundException(String.format("The file with name '%s' is not found on the class path", dataFile));
