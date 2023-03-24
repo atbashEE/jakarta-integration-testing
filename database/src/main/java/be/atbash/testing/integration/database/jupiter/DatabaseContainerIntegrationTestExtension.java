@@ -15,7 +15,6 @@
  */
 package be.atbash.testing.integration.database.jupiter;
 
-import be.atbash.testing.integration.ConfigurationException;
 import be.atbash.testing.integration.container.exception.UnexpectedException;
 import be.atbash.testing.integration.container.image.CustomBuildFile;
 import be.atbash.testing.integration.database.SupportedDatabase;
@@ -30,9 +29,7 @@ import org.testcontainers.containers.JdbcDatabaseContainer;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * The JUnit5 extension that orchestrates the logic for the Integration with the Jakarta Runtime and Database.
@@ -41,41 +38,33 @@ public class DatabaseContainerIntegrationTestExtension extends AbstractContainer
 
     private DatabaseTestcontainersController controller;
 
-    private SupportedDatabase database;
+    protected DatabaseContainerAdapterMetaData databaseMetaData;
 
     @Override
     public void beforeAll(ExtensionContext extensionContext) throws Exception {
         Class<?> testClass = extensionContext.getRequiredTestClass();
         checkTestClass(testClass);
 
-        DatabaseContainerIntegrationTest containerIntegrationTest = testClass.getAnnotation(DatabaseContainerIntegrationTest.class);
+        DatabaseContainerIntegrationTest databaseContainerIntegrationTest = testClass.getAnnotation(DatabaseContainerIntegrationTest.class);
         CustomBuildFile customBuildFileAnnotation = testClass.getAnnotation(CustomBuildFile.class);
         List<Field> restClientFields = AnnotationSupport.findAnnotatedFields(testClass, RestClient.class);
-        metaData = ContainerAdapterMetaData.create(containerIntegrationTest.containerIntegrationTest(), restClientFields, customBuildFileAnnotation);
+        metaData = ContainerAdapterMetaData.create(databaseContainerIntegrationTest.containerIntegrationTest(), restClientFields, customBuildFileAnnotation);
+        databaseMetaData = DatabaseContainerAdapterMetaData.create(databaseContainerIntegrationTest);
 
-        JdbcDatabaseContainer<?> jdbcDatabaseContainer = determineDatabase(containerIntegrationTest);
-        controller = new DatabaseTestcontainersController(testClass, jdbcDatabaseContainer, database, containerIntegrationTest);
+        JdbcDatabaseContainer<?> jdbcDatabaseContainer = createDatabaseContainer();
+        controller = new DatabaseTestcontainersController(testClass, jdbcDatabaseContainer, databaseMetaData);
 
         controller.config(metaData);
 
         controller.start();
     }
 
-    private JdbcDatabaseContainer<?> determineDatabase(DatabaseContainerIntegrationTest containerIntegrationTest) {
-        List<SupportedDatabase> foundDatabases = Arrays.stream(SupportedDatabase.values())
-                .filter(sd -> checkClass(sd.getClassName()) != null)
-                .collect(Collectors.toList());
+    private JdbcDatabaseContainer<?> createDatabaseContainer() {
 
-        if (foundDatabases.size() != 1) {
-            throw new ConfigurationException("None or multiple database containers found. Exactly one supported database container must be on classpath");
-        }
-
-        database = foundDatabases.get(0);
-
-        String databaseImageName = determineDatabaseImageName(containerIntegrationTest);
+        String databaseImageName = determineDatabaseImageName(databaseMetaData.getDatabaseContainerIntegrationTest(), databaseMetaData.getDatabase());
         JdbcDatabaseContainer<?> jdbcDatabaseContainer;
         try {
-            Class<?> databaseContainerClassName = Class.forName(database.getClassName());
+            Class<?> databaseContainerClassName = Class.forName(databaseMetaData.getDatabase().getClassName());
             Constructor<?> databaseContainerConstructor = databaseContainerClassName.getDeclaredConstructor(String.class);
             jdbcDatabaseContainer = (JdbcDatabaseContainer<?>) databaseContainerConstructor.newInstance(databaseImageName);
 
@@ -87,21 +76,10 @@ public class DatabaseContainerIntegrationTestExtension extends AbstractContainer
         return jdbcDatabaseContainer;
     }
 
-    private String determineDatabaseImageName(DatabaseContainerIntegrationTest containerIntegrationTest) {
+    private String determineDatabaseImageName(DatabaseContainerIntegrationTest containerIntegrationTest, SupportedDatabase database) {
         String result = containerIntegrationTest.databaseContainerImageName();
         if (result == null || result.trim().isBlank()) {
             result = database.getDockerImageName();
-        }
-        return result;
-    }
-
-
-    private static Class<?> checkClass(String className) {
-        Class<?> result = null;
-        try {
-            result = Class.forName(className);
-        } catch (ClassNotFoundException e) {
-            ; // Just a test, lets continue
         }
         return result;
     }
