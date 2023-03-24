@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Rudy De Busscher (https://www.atbash.be)
+ * Copyright 2022-2023 Rudy De Busscher (https://www.atbash.be)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,11 @@
  */
 package be.atbash.testing.integration.container;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
+import org.testcontainers.containers.output.Slf4jLogConsumer;
 import org.testcontainers.utility.DockerImageName;
 
 import java.time.Duration;
@@ -31,13 +34,20 @@ import java.util.concurrent.Future;
  */
 public abstract class AbstractIntegrationContainer<SELF extends AbstractIntegrationContainer<SELF>> extends GenericContainer<SELF> {
 
-    public AbstractIntegrationContainer(Future<String> image) {
+    protected final Logger LOGGER = LoggerFactory.getLogger(getClass());
+
+    private final boolean liveLogging;
+
+    public AbstractIntegrationContainer(Future<String> image, boolean liveLogging) {
         super(image);
+        this.liveLogging = liveLogging;
         setNetwork(Network.SHARED);
     }
 
     public AbstractIntegrationContainer(DockerImageName dockerImageName) {
+        // FIXME Is this constructor still needed. Since child constructors aren't used.
         super(dockerImageName);
+        this.liveLogging = false;
         setNetwork(Network.SHARED);
     }
 
@@ -49,4 +59,13 @@ public abstract class AbstractIntegrationContainer<SELF extends AbstractIntegrat
         }
     }
 
+    @Override
+    protected void doStart() {
+        super.doStart();
+        if (liveLogging) {
+            Slf4jLogConsumer logConsumer = new Slf4jLogConsumer(LOGGER);
+            followOutput(logConsumer);  // Show log of container in output.
+        }
+
+    }
 }
