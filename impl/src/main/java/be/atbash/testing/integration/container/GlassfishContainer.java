@@ -16,6 +16,7 @@
 package be.atbash.testing.integration.container;
 
 import be.atbash.testing.integration.container.image.DockerImageProcessor;
+import be.atbash.testing.integration.container.image.TestContext;
 import be.atbash.testing.integration.jupiter.ContainerAdapterMetaData;
 import be.atbash.testing.integration.jupiter.SupportedRuntime;
 import org.testcontainers.containers.wait.strategy.Wait;
@@ -26,8 +27,8 @@ import org.testcontainers.utility.DockerImageName;
  */
 public class GlassfishContainer extends AbstractIntegrationContainer<GlassfishContainer> {
 
-    public GlassfishContainer(ContainerAdapterMetaData metaData) {
-        super(DockerImageProcessor.getImage(SupportedRuntime.GLASSFISH, metaData.getWarFileLocation(), metaData.getCustomBuildDirectory()), metaData.isLiveLogging());
+    public GlassfishContainer(ContainerAdapterMetaData metaData, TestContext testContext) {
+        super(DockerImageProcessor.getImage(SupportedRuntime.GLASSFISH, metaData, testContext), metaData.isLiveLogging());
         withExposedPorts(metaData.getPort());
 
         // Check if application is deployed

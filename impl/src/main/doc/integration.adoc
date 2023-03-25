@@ -8,6 +8,7 @@ v1.2.0, ??/??/2023
 === 1.2.0
 
 . WAR file can be searched in other directories than _target_, include some path outside of the project with `applicationLocation`member of the test annotation.
+. Adapter functionality for Docker Build scripts
 . Support for testing applications that access a database.
 
 === 1.1.0
@@ -187,6 +188,40 @@ ADD test.war /opt/jboss/wildfly/standalone/deployments
 ----
 ADD test.war ${DEPLOYMENT_DIR}
 ----
+
+== Adapter for Docker Build scripts (v1.2.0)
+
+An alternative for providing a custom build script, is to define an adapter that can modify the contents of the build script just before it is sent to the Docker engine.
+
+The adapter receives the default build script or the custom build script when the annotation is defined, and can adapt it.  The return value is used as build script. And thus it is possible that a complete new content is used. This is up to the developer to decide what is needed.
+
+An adapter must implement the interface `be.atbash.testing.integration.container.image.DockerImageAdapter` which has 2 methods.
+
+[source]
+----
+public interface DockerImageAdapter {
+    String adapt(String dockerFileContent, TestContext testContext);
+
+    default SupportedRuntime supportedRuntime() {
+        return SupportedRuntime.DEFAULT;
+    }
+}
+----
+
+Implementations of this interface needs to be 'registered' through the Service Loader mechanism of Java.
+
+The return value of the method `supportedRuntime()`method determines if the adapter is used for any supported runtime or only for a specific one.
+
+Thee is the possibility to define multiple adapters and in that case the @Priority (from Jakarta EE 8) should be used to determine the order the adapters are applied. Lower values are applied first and when no annotation is specified, a value of 100 is assumed.
+
+The instance `TestContext` provides the Adapter the information that is specified on the test annotations and the derived 'metadata'.  The method parameter should be used as.
+
+[source]
+----
+   ContainerAdapterMetaData metaData = testContext.getInstance(ContainerAdapterMetaData.class)
+----
+
+When the database integration test is used, the `ContainerAdapterMetaData` will also be available within this context.
 
 == Using WireMock for fake remote responses (v1.1.0)
 

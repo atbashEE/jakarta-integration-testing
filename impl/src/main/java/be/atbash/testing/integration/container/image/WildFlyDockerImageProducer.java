@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Rudy De Busscher (https://www.atbash.be)
+ * Copyright 2022-2023 Rudy De Busscher (https://www.atbash.be)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,8 @@
  */
 package be.atbash.testing.integration.container.image;
 
+import be.atbash.testing.integration.jupiter.ContainerAdapterMetaData;
+import be.atbash.testing.integration.jupiter.SupportedRuntime;
 import org.junit.jupiter.api.Assertions;
 import org.testcontainers.images.builder.ImageFromDockerfile;
 
@@ -25,23 +27,23 @@ import java.nio.file.Path;
 public class WildFlyDockerImageProducer extends DockerImageProducer {
 
     @Override
-    public ImageFromDockerfile getImage(String warFileLocation, String version, String location) {
+    public ImageFromDockerfile getImage(ContainerAdapterMetaData metaData, String version, TestContext testContext) {
         String fromImage = defineFromImageName("quay.io/wildfly/wildfly", version, "26.1.2.Final");
-        String dockerFileContext = defineDockerfileContent(fromImage, location);
+        String dockerFileContent = postProcessDockerFileContent(defineDockerfileContent(fromImage, metaData.getCustomBuildDirectory()), SupportedRuntime.WILDFLY, testContext);
 
         try {
             // Temporary directory where we assemble all required files to build the custom image
             Path tempDirWithPrefix = Files.createTempDirectory("atbash.test.");
 
-            if (location != null) {
-                copyLocationContentToTempFile(location, tempDirWithPrefix);
+            if (metaData.getCustomBuildDirectory() != null) {
+                copyLocationContentToTempFile(metaData.getCustomBuildDirectory(), tempDirWithPrefix);
             }
 
             // Create the Dockerfile
-            Path dockerPath = saveDockerFile(dockerFileContext, tempDirWithPrefix);
+            Path dockerPath = saveDockerFile(dockerFileContent, tempDirWithPrefix);
 
             // Copy the WAR File
-            String name = copyWARFile(warFileLocation, tempDirWithPrefix);
+            String name = copyWARFile(metaData.getWarFileLocation(), tempDirWithPrefix);
 
             return new ImageFromDockerfile("atbash-wildfly/" + name)
                     .withDockerfile(dockerPath);

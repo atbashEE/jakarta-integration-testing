@@ -17,6 +17,7 @@ package be.atbash.testing.integration.database.jupiter;
 
 import be.atbash.testing.integration.container.exception.UnexpectedException;
 import be.atbash.testing.integration.container.image.CustomBuildFile;
+import be.atbash.testing.integration.container.image.TestContext;
 import be.atbash.testing.integration.database.SupportedDatabase;
 import be.atbash.testing.integration.database.test.AbstractDatabaseContainerIntegrationTest;
 import be.atbash.testing.integration.jupiter.AbstractContainerIntegrationTestExtension;
@@ -52,9 +53,13 @@ public class DatabaseContainerIntegrationTestExtension extends AbstractContainer
         databaseMetaData = DatabaseContainerAdapterMetaData.create(databaseContainerIntegrationTest);
 
         JdbcDatabaseContainer<?> jdbcDatabaseContainer = createDatabaseContainer();
-        controller = new DatabaseTestcontainersController(testClass, jdbcDatabaseContainer, databaseMetaData);
 
-        controller.config(metaData);
+        TestContext testContext = new TestContext();
+        testContext.addInstance(metaData);
+        testContext.addInstance(databaseMetaData);
+
+        controller = new DatabaseTestcontainersController(testClass, jdbcDatabaseContainer, databaseMetaData);
+        controller.config(metaData, testContext);
 
         controller.start();
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Rudy De Busscher (https://www.atbash.be)
+ * Copyright 2022-2023 Rudy De Busscher (https://www.atbash.be)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  */
 package be.atbash.testing.integration.container;
 
+import be.atbash.testing.integration.container.image.TestContext;
 import be.atbash.testing.integration.jupiter.ContainerAdapterMetaData;
 
 /**
@@ -22,21 +23,21 @@ import be.atbash.testing.integration.jupiter.ContainerAdapterMetaData;
  */
 public class ContainerFactory {
 
-    public AbstractIntegrationContainer<?> createContainer(ContainerAdapterMetaData metaData) {
+    public AbstractIntegrationContainer<?> createContainer(ContainerAdapterMetaData metaData, TestContext testContext) {
         AbstractIntegrationContainer<?> result;
         switch (metaData.getSupportedRuntime()) {
 
             case PAYARA_MICRO:
-                result = new PayaraMicroContainer(metaData);
+                result = new PayaraMicroContainer(metaData, testContext);
                 break;
             case OPEN_LIBERTY:
-                result = new OpenLibertyContainer(metaData);
+                result = new OpenLibertyContainer(metaData, testContext);
                 break;
             case WILDFLY:
-                result = new WildflyContainer(metaData);
+                result = new WildflyContainer(metaData, testContext);
                 break;
             case GLASSFISH:
-                result = new GlassfishContainer(metaData);
+                result = new GlassfishContainer(metaData, testContext);
                 break;
             default:
                 throw new IllegalArgumentException(String.format("Unsupported value %s of SupportedRuntime", metaData.getSupportedRuntime()));

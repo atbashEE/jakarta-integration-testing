@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Rudy De Busscher (https://www.atbash.be)
+ * Copyright 2022-2023 Rudy De Busscher (https://www.atbash.be)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  */
 package be.atbash.testing.integration.container.image;
 
+import be.atbash.testing.integration.jupiter.ContainerAdapterMetaData;
 import be.atbash.testing.integration.jupiter.SupportedRuntime;
 import org.testcontainers.images.builder.ImageFromDockerfile;
 
@@ -24,11 +25,11 @@ import org.testcontainers.images.builder.ImageFromDockerfile;
  * TestExecutionExceptionHandler don't go well together (Broken pipe when previous run failed)
  */
 public class DockerImageProcessor {
-    public static ImageFromDockerfile getImage(SupportedRuntime supportedRuntime, String warFileLocation, String location) {
+    public static ImageFromDockerfile getImage(SupportedRuntime supportedRuntime, ContainerAdapterMetaData metaData, TestContext testContext) {
         String version = System.getProperty("be.atbash.test.runtime.version", "");
         DockerImageProducer producer = retrieveProducer(supportedRuntime);
 
-        return producer.getImage(warFileLocation, version, location);
+        return producer.getImage(metaData, version, testContext);
     }
 
     private static DockerImageProducer retrieveProducer(SupportedRuntime supportedRuntime) {

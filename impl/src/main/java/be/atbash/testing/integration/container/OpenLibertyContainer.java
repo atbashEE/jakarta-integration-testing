@@ -16,6 +16,7 @@
 package be.atbash.testing.integration.container;
 
 import be.atbash.testing.integration.container.image.DockerImageProcessor;
+import be.atbash.testing.integration.container.image.TestContext;
 import be.atbash.testing.integration.jupiter.ContainerAdapterMetaData;
 import be.atbash.testing.integration.jupiter.SupportedRuntime;
 import org.testcontainers.containers.wait.strategy.Wait;
@@ -26,9 +27,9 @@ import org.testcontainers.utility.DockerImageName;
  */
 public class OpenLibertyContainer extends AbstractIntegrationContainer<OpenLibertyContainer> {
 
-    public OpenLibertyContainer(ContainerAdapterMetaData metaData) {
+    public OpenLibertyContainer(ContainerAdapterMetaData metaData, TestContext testContext) {
 
-        super(DockerImageProcessor.getImage(SupportedRuntime.OPEN_LIBERTY, metaData.getWarFileLocation(), metaData.getCustomBuildDirectory())
+        super(DockerImageProcessor.getImage(SupportedRuntime.OPEN_LIBERTY, metaData, testContext)
                 , metaData.isLiveLogging());
         withExposedPorts(metaData.getPort());
 
