@@ -15,6 +15,8 @@
  */
 package be.atbash.testing.integration.container.image;
 
+import be.atbash.testing.integration.jupiter.ContainerAdapterMetaData;
+import be.atbash.testing.integration.jupiter.SupportedRuntime;
 import org.junit.jupiter.api.Assertions;
 import org.testcontainers.images.builder.ImageFromDockerfile;
 
@@ -26,24 +28,24 @@ import java.nio.file.Path;
 public class OpenLibertyDockerImageProducer extends DockerImageProducer {
 
     @Override
-    public ImageFromDockerfile getImage(String warFileLocation, String version, String location) {
-        // FIXME We need the Docker iage for the Jakarta EE 10 version which is not yet available.
+    public ImageFromDockerfile getImage(ContainerAdapterMetaData metaData, String version, TestContext testContext) {
+        // FIXME We need the Docker image for the Jakarta EE 10 version which is not yet available.
         String fromImage = defineFromImageName("openliberty/open-liberty", version, "22.0.0.10-full-java11-openj9-ubi");
-        String dockerFileContext = defineDockerfileContent(fromImage, location);
+        String dockerFileContent = postProcessDockerFileContent(defineDockerfileContent(fromImage, metaData.getCustomBuildDirectory()), SupportedRuntime.OPEN_LIBERTY, testContext);
 
         try {
             // Temporary directory where we assemble all required files to build the custom image
             Path tempDirWithPrefix = Files.createTempDirectory("atbash.test.");
 
-            if (location != null) {
-                copyLocationContentToTempFile(location, tempDirWithPrefix);
+            if (metaData.getCustomBuildDirectory() != null) {
+                copyLocationContentToTempFile(metaData.getCustomBuildDirectory(), tempDirWithPrefix);
             }
 
             // Create the Dockerfile
-            Path dockerPath = saveDockerFile(dockerFileContext, tempDirWithPrefix);
+            Path dockerPath = saveDockerFile(dockerFileContent, tempDirWithPrefix);
 
             // Copy the WAR File
-            String name = copyWARFile(warFileLocation, tempDirWithPrefix);
+            String name = copyWARFile(metaData.getWarFileLocation(), tempDirWithPrefix);
 
             // Copy the server.xml file
             File configFile = new File("src/main/liberty/config/server.xml");

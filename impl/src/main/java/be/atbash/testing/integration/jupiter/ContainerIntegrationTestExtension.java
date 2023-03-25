@@ -16,6 +16,7 @@
 package be.atbash.testing.integration.jupiter;
 
 import be.atbash.testing.integration.container.image.CustomBuildFile;
+import be.atbash.testing.integration.container.image.TestContext;
 import be.atbash.testing.integration.test.AbstractContainerIntegrationTest;
 import com.fasterxml.jackson.jakarta.rs.json.JacksonJsonProvider;
 import org.eclipse.microprofile.rest.client.RestClientBuilder;
@@ -44,8 +45,10 @@ public class ContainerIntegrationTestExtension extends AbstractContainerIntegrat
 
         List<Field> restClientFields = AnnotationSupport.findAnnotatedFields(testClass, RestClient.class);
         metaData = ContainerAdapterMetaData.create(containerIntegrationTest, restClientFields, customBuildFileAnnotation);
+        TestContext testContext = new TestContext();
+        testContext.addInstance(metaData);
         controller = new TestcontainersController(testClass);
-        controller.config(metaData);
+        controller.config(metaData, testContext);
         controller.start();
     }
 

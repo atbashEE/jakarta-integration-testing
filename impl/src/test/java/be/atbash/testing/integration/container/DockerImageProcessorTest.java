@@ -16,13 +16,16 @@
 package be.atbash.testing.integration.container;
 
 import be.atbash.testing.integration.container.image.DockerImageProcessor;
+import be.atbash.testing.integration.jupiter.ContainerAdapterMetaData;
 import be.atbash.testing.integration.jupiter.SupportedRuntime;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.testcontainers.images.builder.ImageFromDockerfile;
 
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -38,8 +41,9 @@ class DockerImageProcessorTest {
     }
 
     @Test
-    void getImage() throws IOException {
-        ImageFromDockerfile image = DockerImageProcessor.getImage(SupportedRuntime.PAYARA_MICRO, "src/test/resources/test.war", null);
+    void getImage() throws IOException, NoSuchMethodException {
+        ContainerAdapterMetaData metaData = createMetaData();
+        ImageFromDockerfile image = DockerImageProcessor.getImage(SupportedRuntime.PAYARA_MICRO, metaData, null);
 
         Assertions.assertThat(image).isNotNull();
         Assertions.assertThat(image.getDockerfile()).isPresent();
@@ -64,10 +68,22 @@ class DockerImageProcessorTest {
                 "ADD test.war /opt/payara/deployments ");
     }
 
+    private ContainerAdapterMetaData createMetaData() throws NoSuchMethodException {
+        // Use reflection to set the private constructor to be accessible
+        Constructor<ContainerAdapterMetaData> constructor = ContainerAdapterMetaData.class.getDeclaredConstructor();
+        constructor.setAccessible(true);
+
+        // Mock the static create() method to return an instance of the class
+        ContainerAdapterMetaData result = Mockito.mock(ContainerAdapterMetaData.class);
+        Mockito.when(result.getWarFileLocation()).thenReturn("src/test/resources/test.war");
+        return result;
+    }
+
     @Test
-    void getImage_versionSpecified() throws IOException {
+    void getImage_versionSpecified() throws IOException, NoSuchMethodException {
         System.setProperty(VERSION_PROPERTY, "1234");
-        ImageFromDockerfile image = DockerImageProcessor.getImage(SupportedRuntime.PAYARA_MICRO, "src/test/resources/test.war", null);
+        ContainerAdapterMetaData metaData = createMetaData();
+        ImageFromDockerfile image = DockerImageProcessor.getImage(SupportedRuntime.PAYARA_MICRO, metaData, null);
 
         Assertions.assertThat(image).isNotNull();
         Assertions.assertThat(image.getDockerfile()).isPresent();
@@ -81,9 +97,10 @@ class DockerImageProcessorTest {
     }
 
     @Test
-    void getImage_imageSpecified() throws IOException {
+    void getImage_imageSpecified() throws IOException, NoSuchMethodException {
         System.setProperty(VERSION_PROPERTY, "myImage:4321");
-        ImageFromDockerfile image = DockerImageProcessor.getImage(SupportedRuntime.PAYARA_MICRO, "src/test/resources/test.war", null);
+        ContainerAdapterMetaData metaData = createMetaData();
+        ImageFromDockerfile image = DockerImageProcessor.getImage(SupportedRuntime.PAYARA_MICRO, metaData, null);
 
         Assertions.assertThat(image).isNotNull();
         Assertions.assertThat(image.getDockerfile()).isPresent();

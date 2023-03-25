@@ -15,6 +15,8 @@
  */
 package be.atbash.testing.integration.container.image;
 
+import be.atbash.testing.integration.jupiter.ContainerAdapterMetaData;
+import be.atbash.testing.integration.jupiter.SupportedRuntime;
 import org.junit.jupiter.api.Assertions;
 import org.testcontainers.images.builder.ImageFromDockerfile;
 
@@ -25,23 +27,23 @@ import java.nio.file.Path;
 public class PayaraMicroDockerImageProducer extends DockerImageProducer {
 
     @Override
-    public ImageFromDockerfile getImage(String warFileLocation, String version, String location) {
+    public ImageFromDockerfile getImage(ContainerAdapterMetaData metaData, String version, TestContext testContext) {
         String fromImage = defineFromImageName("payara/micro", version, "6.2023.2");
-        String dockerFileContext = defineDockerfileContent(fromImage, location);
+        String dockerFileContent = postProcessDockerFileContent(defineDockerfileContent(fromImage, metaData.getCustomBuildDirectory()), SupportedRuntime.PAYARA_MICRO, testContext);
 
         try {
             // Temporary directory where we assemble all required files to build the custom image
             Path tempDirWithPrefix = Files.createTempDirectory("atbash.test.");
 
-            if (location != null) {
-                copyLocationContentToTempFile(location, tempDirWithPrefix);
+            if (metaData.getCustomBuildDirectory() != null) {
+                copyLocationContentToTempFile(metaData.getCustomBuildDirectory(), tempDirWithPrefix);
             }
 
             // Create the Dockerfile
-            Path dockerPath = saveDockerFile(dockerFileContext, tempDirWithPrefix);
+            Path dockerPath = saveDockerFile(dockerFileContent, tempDirWithPrefix);
 
             // Copy the WAR File
-            String name = copyWARFile(warFileLocation, tempDirWithPrefix);
+            String name = copyWARFile(metaData.getWarFileLocation(), tempDirWithPrefix);
 
             return new ImageFromDockerfile("atbash-payara/" + name)
                     .withDockerfile(dockerPath);

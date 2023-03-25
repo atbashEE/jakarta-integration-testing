@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Rudy De Busscher (https://www.atbash.be)
+ * Copyright 2022-2023 Rudy De Busscher (https://www.atbash.be)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 package be.atbash.testing.integration.container.image;
 
 import be.atbash.testing.integration.container.exception.FileReadingException;
+import be.atbash.testing.integration.jupiter.ContainerAdapterMetaData;
+import be.atbash.testing.integration.jupiter.SupportedRuntime;
 import org.junit.jupiter.api.Assertions;
 import org.testcontainers.images.builder.ImageFromDockerfile;
 
@@ -24,6 +26,9 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
+import java.util.ServiceLoader;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
@@ -38,12 +43,11 @@ public abstract class DockerImageProducer {
      * according the supported Runtime.  Some additional statements are added if a Docker file is supplied in
      * the location.
      *
-     * @param warFileLocation The location of the war file.
-     * @param version         The version if a default DockerFile is created
-     * @param location        an optional location for additional files and a supplied DockerFile.
+     * @param metaData
+     * @param version  The version if a default DockerFile is created
      * @return The DockerFile that will be used within the test.
      */
-    abstract ImageFromDockerfile getImage(String warFileLocation, String version, String location);
+    abstract ImageFromDockerfile getImage(ContainerAdapterMetaData metaData, String version, TestContext testContext);
 
     protected String defineFromImageName(String imageName, String suppliedVersion, String defaultTagName) {
         if (suppliedVersion.contains("/") || suppliedVersion.contains(":")) {
@@ -67,10 +71,10 @@ public abstract class DockerImageProducer {
         return name;
     }
 
-    protected Path saveDockerFile(String dockerFileContext, Path tempDirWithPrefix) throws IOException {
+    protected Path saveDockerFile(String dockerFileContent, Path tempDirWithPrefix) throws IOException {
         Path dockerPath = tempDirWithPrefix.resolve(DOCKERFILE);
         try (BufferedWriter writer = Files.newBufferedWriter(dockerPath)) {
-            writer.write(dockerFileContext);
+            writer.write(dockerFileContent);
         }
         return dockerPath;
     }
@@ -133,4 +137,24 @@ public abstract class DockerImageProducer {
         return tempDirWithPrefix.resolve(endPath);
     }
 
+    protected String postProcessDockerFileContent(String dockerFileContent, SupportedRuntime supportedRuntime, TestContext testContext) {
+        List<DockerImageAdapter> adapters = loadAllAdapters(supportedRuntime);
+        String result = dockerFileContent;
+        for (DockerImageAdapter adapter : adapters) {
+            result = adapter.adapt(result, testContext);
+        }
+        return result;
+    }
+
+    private List<DockerImageAdapter> loadAllAdapters(SupportedRuntime supportedRuntime) {
+        return ServiceLoader.load(DockerImageAdapter.class).stream()
+                .map(ServiceLoader.Provider::get)
+                .filter(p -> matchingRuntime(p, supportedRuntime))
+                .sorted(new DockerImageAdapterComparator())
+                .collect(Collectors.toList());
+    }
+
+    private boolean matchingRuntime(DockerImageAdapter adapter, SupportedRuntime supportedRuntime) {
+        return adapter.supportedRuntime() == SupportedRuntime.DEFAULT || adapter.supportedRuntime() == supportedRuntime;
+    }
 }

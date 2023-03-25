@@ -17,7 +17,7 @@ package be.atbash.testing.integration.database.jupiter;
 
 import be.atbash.testing.integration.container.AbstractIntegrationContainer;
 import be.atbash.testing.integration.container.exception.UnexpectedException;
-import be.atbash.testing.integration.database.SupportedDatabase;
+import be.atbash.testing.integration.container.image.TestContext;
 import be.atbash.testing.integration.database.exception.FileNotFoundException;
 import be.atbash.testing.integration.jupiter.ContainerAdapterMetaData;
 import be.atbash.testing.integration.jupiter.TestcontainersController;
@@ -29,7 +29,6 @@ import org.dbunit.dataset.excel.XlsDataSet;
 import org.dbunit.operation.DatabaseOperation;
 import org.testcontainers.containers.JdbcDatabaseContainer;
 import org.testcontainers.containers.Network;
-import org.testcontainers.containers.output.Slf4jLogConsumer;
 import org.testcontainers.ext.ScriptUtils;
 import org.testcontainers.jdbc.JdbcDatabaseDelegate;
 
@@ -67,8 +66,8 @@ public class DatabaseTestcontainersController extends TestcontainersController {
     }
 
     @Override
-    public void config(ContainerAdapterMetaData metaData) {
-        super.config(metaData);  // As it prepares the 'applicationTestContainer'
+    public void config(ContainerAdapterMetaData metaData, TestContext testContext) {
+        super.config(metaData, testContext);  // As it prepares the 'applicationTestContainer'
         String dbHostName = "db";
 
         jdbcDatabaseContainer.setNetwork(Network.SHARED);

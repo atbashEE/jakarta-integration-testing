@@ -16,6 +16,7 @@
 package be.atbash.testing.integration.container;
 
 import be.atbash.testing.integration.container.image.DockerImageProcessor;
+import be.atbash.testing.integration.container.image.TestContext;
 import be.atbash.testing.integration.jupiter.ContainerAdapterMetaData;
 import be.atbash.testing.integration.jupiter.SupportedRuntime;
 import org.testcontainers.containers.wait.strategy.Wait;
@@ -26,8 +27,8 @@ import org.testcontainers.utility.DockerImageName;
  */
 public class WildflyContainer extends AbstractIntegrationContainer<WildflyContainer> {
 
-    public WildflyContainer(ContainerAdapterMetaData metaData) {
-        super(DockerImageProcessor.getImage(SupportedRuntime.WILDFLY, metaData.getWarFileLocation(), metaData.getCustomBuildDirectory()), metaData.isLiveLogging());
+    public WildflyContainer(ContainerAdapterMetaData metaData, TestContext testContext) {
+        super(DockerImageProcessor.getImage(SupportedRuntime.WILDFLY, metaData, testContext), metaData.isLiveLogging());
         withExposedPorts(metaData.getPort(), 9990);
         // port 9990 for the management where health is
 

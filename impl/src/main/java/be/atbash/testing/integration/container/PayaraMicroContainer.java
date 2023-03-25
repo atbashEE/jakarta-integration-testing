@@ -16,6 +16,7 @@
 package be.atbash.testing.integration.container;
 
 import be.atbash.testing.integration.container.image.DockerImageProcessor;
+import be.atbash.testing.integration.container.image.TestContext;
 import be.atbash.testing.integration.jupiter.ContainerAdapterMetaData;
 import be.atbash.testing.integration.jupiter.SupportedRuntime;
 import org.testcontainers.containers.wait.strategy.Wait;
@@ -26,8 +27,8 @@ import org.testcontainers.utility.DockerImageName;
  */
 public class PayaraMicroContainer extends AbstractIntegrationContainer<PayaraMicroContainer> {
 
-    public PayaraMicroContainer(ContainerAdapterMetaData metaData) {
-        super(DockerImageProcessor.getImage(SupportedRuntime.PAYARA_MICRO, metaData.getWarFileLocation(), metaData.getCustomBuildDirectory()), metaData.isLiveLogging());
+    public PayaraMicroContainer(ContainerAdapterMetaData metaData, TestContext testContext) {
+        super(DockerImageProcessor.getImage(SupportedRuntime.PAYARA_MICRO, metaData, testContext), metaData.isLiveLogging());
         withExposedPorts(metaData.getPort());
 
         // Health point of Payara Micro based on MicroProfile Health

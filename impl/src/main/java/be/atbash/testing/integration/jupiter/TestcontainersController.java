@@ -17,6 +17,7 @@ package be.atbash.testing.integration.jupiter;
 
 import be.atbash.testing.integration.container.AbstractIntegrationContainer;
 import be.atbash.testing.integration.container.ContainerFactory;
+import be.atbash.testing.integration.container.image.TestContext;
 import be.atbash.testing.integration.test.AbstractContainerIntegrationTest;
 import be.atbash.testing.integration.wiremock.WireMockContainer;
 import org.junit.jupiter.api.Assertions;
@@ -97,10 +98,10 @@ public class TestcontainersController {
 
     }
 
-    public void config(ContainerAdapterMetaData metaData) {
+    public void config(ContainerAdapterMetaData metaData, TestContext testContext) {
         // Configure the container.
         // ContainerAdapterMetaData determine the container which will be used.
-        applicationTestContainer = new ContainerFactory().createContainer(metaData);
+        applicationTestContainer = new ContainerFactory().createContainer(metaData, testContext);
 
         defineVolumeMapping(metaData.getVolumeMapping());
 
