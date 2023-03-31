@@ -34,8 +34,7 @@ public class OpenLibertyDockerImageProducer extends DockerImageProducer {
         String dockerFileContent = postProcessDockerFileContent(defineDockerfileContent(fromImage, metaData.getCustomBuildDirectory()), SupportedRuntime.OPEN_LIBERTY, testContext);
 
         try {
-            // Temporary directory where we assemble all required files to build the custom image
-            Path tempDirWithPrefix = Files.createTempDirectory("atbash.test.");
+            Path tempDirWithPrefix = metaData.getTempDir();
 
             if (metaData.getCustomBuildDirectory() != null) {
                 copyLocationContentToTempFile(metaData.getCustomBuildDirectory(), tempDirWithPrefix);

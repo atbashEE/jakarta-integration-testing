@@ -1,0 +1,3 @@
+be.atbash.testing.integration.database.image.PayaraMicroImageDatabaseAdapter
+be.atbash.testing.integration.database.image.OpenLibertyImageDatabaseAdapter
+be.atbash.testing.integration.database.image.WildflyImageDatabaseAdapter

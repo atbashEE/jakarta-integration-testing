@@ -45,4 +45,8 @@ public @interface DatabaseContainerIntegrationTest {
     EnvironmentParametersForDatabase environmentParametersForDatabase() default @EnvironmentParametersForDatabase;
 
     DatabaseScriptFiles databaseScriptFiles() default @DatabaseScriptFiles;
+
+    JDBCDriverArtifact jdbcDriverArtifact() default @JDBCDriverArtifact;
+
+    String jndiDatasourceName() default "java:jboss/datasources/defaultDataSource"; // Only for WildFly
 }

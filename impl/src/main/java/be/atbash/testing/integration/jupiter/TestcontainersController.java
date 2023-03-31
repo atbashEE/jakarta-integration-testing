@@ -16,6 +16,7 @@
 package be.atbash.testing.integration.jupiter;
 
 import be.atbash.testing.integration.container.AbstractIntegrationContainer;
+import be.atbash.testing.integration.container.AdditionalEnvParameters;
 import be.atbash.testing.integration.container.ContainerFactory;
 import be.atbash.testing.integration.container.image.TestContext;
 import be.atbash.testing.integration.test.AbstractContainerIntegrationTest;
@@ -104,6 +105,14 @@ public class TestcontainersController {
         applicationTestContainer = new ContainerFactory().createContainer(metaData, testContext);
 
         defineVolumeMapping(metaData.getVolumeMapping());
+
+
+        AdditionalEnvParameters envParameters = testContext.getInstance(AdditionalEnvParameters.class);
+        if(envParameters != null) {
+            for (Map.Entry<String, String> entry : envParameters.getParameters().entrySet()) {
+                applicationTestContainer.withEnv(entry.getKey(), entry.getValue());
+            }
+        }
 
         try {
             runtimeContainerField.set(null, applicationTestContainer);
