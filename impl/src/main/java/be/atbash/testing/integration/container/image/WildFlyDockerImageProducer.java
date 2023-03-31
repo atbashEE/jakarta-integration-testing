@@ -21,7 +21,6 @@ import org.junit.jupiter.api.Assertions;
 import org.testcontainers.images.builder.ImageFromDockerfile;
 
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class WildFlyDockerImageProducer extends DockerImageProducer {
@@ -32,8 +31,7 @@ public class WildFlyDockerImageProducer extends DockerImageProducer {
         String dockerFileContent = postProcessDockerFileContent(defineDockerfileContent(fromImage, metaData.getCustomBuildDirectory()), SupportedRuntime.WILDFLY, testContext);
 
         try {
-            // Temporary directory where we assemble all required files to build the custom image
-            Path tempDirWithPrefix = Files.createTempDirectory("atbash.test.");
+            Path tempDirWithPrefix = metaData.getTempDir();
 
             if (metaData.getCustomBuildDirectory() != null) {
                 copyLocationContentToTempFile(metaData.getCustomBuildDirectory(), tempDirWithPrefix);

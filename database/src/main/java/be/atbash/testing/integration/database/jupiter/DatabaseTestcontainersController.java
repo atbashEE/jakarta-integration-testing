@@ -79,6 +79,7 @@ public class DatabaseTestcontainersController extends TestcontainersController {
                 dbHostName, jdbcDatabaseContainer.getExposedPorts().get(0));
 
         DatabaseContainerIntegrationTest containerIntegrationTest = databaseContainerMetaData.getDatabaseContainerIntegrationTest();
+
         AbstractIntegrationContainer<?> applicationContainer = getApplicationTestContainer();
         applicationContainer.withEnv(containerIntegrationTest.environmentParametersForDatabase().jdbcURL(), jdbcUrl);
         applicationContainer.withEnv(containerIntegrationTest.environmentParametersForDatabase().username(), jdbcDatabaseContainer.getUsername());

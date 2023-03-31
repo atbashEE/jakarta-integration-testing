@@ -52,6 +52,9 @@ public class ContainerAdapterMetaData {
 
     private List<Field> restClientFields;
 
+    // Temporary directory where we assemble all required files to build the custom image
+    private Path tempDirWithPrefix;
+
     private ContainerAdapterMetaData() {
     }
 
@@ -87,6 +90,10 @@ public class ContainerAdapterMetaData {
         return restClientFields;
     }
 
+    public Path getTempDir() {
+        return tempDirWithPrefix;
+    }
+
     public static ContainerAdapterMetaData create(ContainerIntegrationTest containerIntegrationTest, List<Field> restClientFields, CustomBuildFile customBuildFileAnnotation) {
         ContainerAdapterMetaData result = new ContainerAdapterMetaData();
 
@@ -103,6 +110,12 @@ public class ContainerAdapterMetaData {
         result.volumeMapping = defineVolumeMappings(containerIntegrationTest.volumeMapping());
 
         result.restClientFields = restClientFields;
+
+        try {
+            result.tempDirWithPrefix = Files.createTempDirectory("atbash.test.");
+        } catch (IOException e) {
+            throw new UnexpectedException("Exception during creation of temporary directory for Docker build", e);
+        }
 
         return result;
     }
