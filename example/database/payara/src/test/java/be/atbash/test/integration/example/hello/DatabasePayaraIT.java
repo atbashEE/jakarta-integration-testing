@@ -35,7 +35,6 @@ import java.util.Map;
 
 @DatabaseContainerIntegrationTest(
         containerIntegrationTest = @ContainerIntegrationTest(runtime = SupportedRuntime.PAYARA_MICRO)
-        , databaseScriptFiles = @DatabaseScriptFiles
 )
 public class DatabasePayaraIT extends AbstractDatabaseContainerIntegrationTest {
     // Should be public and not the JUnit 5 preferred scope package.
