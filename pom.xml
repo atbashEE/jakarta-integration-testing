@@ -79,6 +79,7 @@
                         <exclude>**/*.adoc</exclude>
                         <exclude>**/*.adi</exclude>
                         <exclude>**/*.jwk</exclude>
+                        <exclude>**/*.sql</exclude>
                         <exclude>**/README</exclude>
                         <exclude>**/LICENSE.txt</exclude>
                         <exclude>**/NOTICE.txt</exclude>

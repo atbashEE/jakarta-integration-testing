@@ -22,10 +22,10 @@ import be.atbash.testing.integration.database.connection.PostgresConnectionProvi
 
 public enum SupportedDatabase {
 
-    MYSQL("org.testcontainers.containers.MySQLContainer", "mysql:5.7.34", "jdbc:mysql://%s:%d/test?useSSL=false", new MySQLConnectionProvider(), "mysql:mysql-connector-java:5.1.49")
-    , POSTGRES("org.testcontainers.containers.PostgreSQLContainer", "postgres:9.6.12", "jdbc:postgresql://%s:%d/test", new PostgresConnectionProvider(), "org.postgresql:postgresql:42.2.24")
-    , MARIADB("org.testcontainers.containers.MariaDBContainer", "mariadb:10.3.6", "jdbc:mariadb://%s:%d/test", new MySQLConnectionProvider(), "org.mariadb.jdbc:mariadb-java-client:3.0.3")  // We use the MySQL one here
-    , ORACLE_XE("org.testcontainers.containers.OracleContainer", "gvenzl/oracle-xe:18.4.0-slim", "jdbc:oracle:thin:@//%s:%d", new OracleConnectionProvider(), "com.oracle.jdbc:ojdbc8:18.3.0.0");
+    MYSQL("org.testcontainers.containers.MySQLContainer", "mysql:5.7.34", "jdbc:mysql://%s:%d/test?useSSL=false", new MySQLConnectionProvider(), "com.mysql.jdbc")
+    , POSTGRES("org.testcontainers.containers.PostgreSQLContainer", "postgres:9.6.12", "jdbc:postgresql://%s:%d/test", new PostgresConnectionProvider(), "org.postgresql")
+    , MARIADB("org.testcontainers.containers.MariaDBContainer", "mariadb:10.3.6", "jdbc:mariadb://%s:%d/test", new MySQLConnectionProvider(), "org.mariadb.jdbc")  // We use the MySQL one here
+    , ORACLE_XE("org.testcontainers.containers.OracleContainer", "gvenzl/oracle-xe:18.4.0-slim", "jdbc:oracle:thin:@//%s:%d", new OracleConnectionProvider(), "oracle.jdbc");
 
     private final String className;
     private final String dockerImageName;
@@ -33,15 +33,15 @@ public enum SupportedDatabase {
 
     private final IDatabaseConnectionProvider connectionSupplier;
 
-    private final String mavenArtifactForDriver;
+    private final String driverPackageName;
 
-    SupportedDatabase(String className, String dockerImageName, String jdbcURLTemplate, IDatabaseConnectionProvider connectionSupplier, String mavenArtifactForDriver) {
+    SupportedDatabase(String className, String dockerImageName, String jdbcURLTemplate, IDatabaseConnectionProvider connectionSupplier, String driverPackageName) {
 
         this.className = className;
         this.dockerImageName = dockerImageName;
         this.jdbcURLTemplate = jdbcURLTemplate;
         this.connectionSupplier = connectionSupplier;
-        this.mavenArtifactForDriver = mavenArtifactForDriver;
+        this.driverPackageName = driverPackageName;
     }
 
     public String getClassName() {
@@ -60,7 +60,7 @@ public enum SupportedDatabase {
         return connectionSupplier;
     }
 
-    public String getMavenArtifactForDriver() {
-        return mavenArtifactForDriver;
+    public String getDriverPackageName() {
+        return driverPackageName;
     }
 }

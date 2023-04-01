@@ -294,7 +294,7 @@ For example, the following dependency
 
 triggers the support for MySQL. Other supported databases are PostgresSQL, MariaDB and Oracle XE.
 
-The JDBC Driver that will be installed together with your application on the runtime, s derived from the selected container.  You can override this through a configuration as described below.
+The JDBC Driver that will be installed together with your application on the runtime, is determined from the selected database container and must be added to the project as test dependency.
 
 The `@DatabaseContainerIntegrationTest` annotation allows for several configuration options. At a minimum, the `ContainerIntegrationTest` must be specified, as with any Jakarta Integration test.
 
@@ -311,12 +311,11 @@ Other options are
 - _databaseScriptFiles_ defines the file names that are loaded from the class path to create the database tables and the Excel file that contains the data (records) that will be loaded for the test (through DBUnit).
 - _databaseContainerImageName_ defines the Docker image name if you do not want to make use of the default image that comes with the dependency.
 - _databaseContainerStartInParallel_ defines if the database starts in parallel with the other containers or separately as the first container.
-- _jdbcDriverArtifact_ an annotation that allows to define which JDBC driver must be taken instead of the default one.  The `driverJarFile` expects an absolute path to the JAR file containing the driver. If specified, it overrules the `mavenArtifact` on that annotation which specifies the driver as maven artifact that must be present in the local repo. The format is `<groupId>:<artifactId>:<version>`. If neither are defined, the default configured within the Atbash code is taken.
 - _jndiDatasourceName_ is used when using WildFly and must match the JNDI name you have specified within the _persistence.xml_ file.
 
 Besides the start of the database container when the container running your application starts, it provides you also a way query the database during the test itself.
 
-For that purpose, a  `IDatabaseConnection` from DBUnit is accessible to test the changes that should be done by the application code during te test.
+For that purpose, a  `IDatabaseConnection` from _DBUnit_ is accessible to test the changes that should be done by the application code during the test.
 
 [source]
 ----
@@ -373,7 +372,7 @@ The keys _ds_url_, _ds_username_, and _ds_password_ can be changed by the `envir
 
 This is the runtime where the automatic support for database works the least.  The datasource is deployed by creating a _datasource XML_ file that is deployed alongside the application. But to have the variables replaced at startup, the docker image also need to install the Unix command `envsubst` which takes a bit of time.
 
-Also the JNDI name you specified in th persistence.xml must be defined through the _jndiDatasourceName_ option mentioned earlier.
+Also, the JNDI name you specified in th persistence.xml must be defined through the _jndiDatasourceName_ option mentioned earlier.
 
 == Additional containers for a test (v1.1.0)
 
