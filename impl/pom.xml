@@ -32,9 +32,9 @@
     <name>Integration Testing with Testcontainers for Jakarta EE runtimes</name>
 
     <properties>
-        <junit.version>5.9.1</junit.version>
-        <apache.cxf.version>3.5.3</apache.cxf.version>
-        <jackson.version>2.13.4</jackson.version>
+        <junit.version>5.9.2</junit.version>
+        <apache.cxf.version>3.5.5</apache.cxf.version>
+        <jackson.version>2.14.2</jackson.version>
 
         <asciidoctor.maven.plugin.version>2.2.1</asciidoctor.maven.plugin.version>
         <asciidoctorj.pdf.version>1.6.2</asciidoctorj.pdf.version>
@@ -67,7 +67,7 @@
             <!-- Force version of Jackson databind to a patch version that doesn't have the security vulnerability -->
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.13.4.2</version>
+            <version>${jackson.version}</version>
         </dependency>
         <!-- Also woodstox-core has a security vulnerability but not using th XML functionality of jackson. -->
 

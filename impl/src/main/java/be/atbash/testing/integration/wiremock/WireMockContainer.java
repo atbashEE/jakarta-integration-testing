@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Rudy De Busscher (https://www.atbash.be)
+ * Copyright 2022-2023 Rudy De Busscher (https://www.atbash.be)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,7 +40,7 @@ public class WireMockContainer extends GenericContainer<WireMockContainer> {
     private final ObjectMapper mapper = new ObjectMapper();
 
     private WireMockContainer(String hostName) {
-        super(DockerImageName.parse("wiremock/wiremock:2.34.0"));
+        super(DockerImageName.parse("wiremock/wiremock:2.35.0"));
         setNetwork(Network.SHARED);
         setNetworkAliases(List.of(hostName));
         addExposedPorts(8080);
