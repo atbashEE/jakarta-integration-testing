@@ -40,7 +40,7 @@ public class WireMockContainer extends GenericContainer<WireMockContainer> {
     private final ObjectMapper mapper = new ObjectMapper();
 
     private WireMockContainer(String hostName) {
-        super(DockerImageName.parse("wiremock/wiremock:2.34.0"));
+        super(DockerImageName.parse("wiremock/wiremock:2.35.0"));
         setNetwork(Network.SHARED);
         setNetworkAliases(List.of(hostName));
         addExposedPorts(8080);

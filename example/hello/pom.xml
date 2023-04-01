@@ -31,12 +31,7 @@
     <version>2.2.0-SNAPSHOT</version>
     <name>Hello World Jakarta EE Integration Testing Example</name>
     <packaging>war</packaging>
-    <properties>
 
-    </properties>
-    <dependencies>
-
-    </dependencies>
 
     <build>
         <finalName>hello</finalName>
