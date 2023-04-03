@@ -43,7 +43,7 @@ public abstract class DockerImageProducer {
      * according the supported Runtime.  Some additional statements are added if a Docker file is supplied in
      * the location.
      *
-     * @param metaData
+     * @param metaData The metadata for the container.
      * @param version  The version if a default DockerFile is created
      * @return The DockerFile that will be used within the test.
      */
@@ -102,7 +102,7 @@ public abstract class DockerImageProducer {
             try (Stream<Path> pathStream = Files.find(Path.of(source),
                     Integer.MAX_VALUE,
                     (filePath, fileAttr) -> fileAttr.isRegularFile()
-                            && !filePath.getFileName().endsWith("Dockerfile"))) {
+                            && !filePath.getFileName().endsWith(DOCKERFILE))) {
                 // For each of the found files, copy it to the temporary directory.
                 pathStream.forEach(p -> copyToTemp(source, p, tempDir));
             }

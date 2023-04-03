@@ -41,9 +41,11 @@ public class ShowLogWhenFailedExceptionHandler implements TestExecutionException
 
             AbstractIntegrationContainer<?> mainContainer = getMainContainer(extensionContext.getRequiredTestClass());
 
-            String logs = mainContainer.getLogs();
-            System.out.println("Container log");
-            System.out.println(logs);
+            if (mainContainer != null) {
+                String logs = mainContainer.getLogs();
+                System.out.println("Container log");
+                System.out.println(logs);
+            }
         }
         throw throwable;  // rethrow. We just wanted to output the container log.
     }
@@ -67,7 +69,6 @@ public class ShowLogWhenFailedExceptionHandler implements TestExecutionException
                     result = (AbstractIntegrationContainer<?>) containerField.get(null);
 
                 }
-
 
             } catch (IllegalArgumentException | IllegalAccessException e) {
                 LOGGER.warn("Unable to access field " + containerField, e);

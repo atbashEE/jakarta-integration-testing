@@ -13,15 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package be.atbash.testing.integration.container.exception;
+package be.atbash.testing.integration.database.exception;
 
-public class UnexpectedException extends RuntimeException {
+import org.junit.platform.commons.JUnitException;
 
-    public UnexpectedException(String message, Throwable cause) {
+public class DataScriptException extends JUnitException {
+    public DataScriptException(String message, Throwable cause) {
         super(message, cause);
-    }
-
-    public UnexpectedException(String message) {
-        super(message);
     }
 }

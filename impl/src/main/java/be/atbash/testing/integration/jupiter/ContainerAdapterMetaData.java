@@ -150,7 +150,7 @@ public class ContainerAdapterMetaData {
     }
 
     public static int determinePort(SupportedRuntime supportedRuntime) {
-        int port = 0;
+        int port;
         switch (supportedRuntime) {
 
             case PAYARA_MICRO:
@@ -160,6 +160,8 @@ public class ContainerAdapterMetaData {
             case OPEN_LIBERTY:
                 port = 9080;
                 break;
+            default:
+                throw new UnexpectedException("No support for " + supportedRuntime);
         }
         return port;
     }
@@ -182,12 +184,11 @@ public class ContainerAdapterMetaData {
 
         // Find a .war file in the target/ directories
         Set<File> matches = new HashSet<>(findAppFiles(dir));
-        if (matches.size() == 0) {
+        if (matches.isEmpty()) {
 
             try {
                 throw new IllegalStateException(String.format("No .war files found in folder (including sub folders) %s.", dir.getCanonicalPath()));
             } catch (IOException e) {
-
                 throw new UnexpectedException("Exception during File.getCanonicalPath()", e);
             }
         }

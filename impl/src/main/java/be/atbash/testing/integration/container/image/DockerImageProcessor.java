@@ -24,7 +24,11 @@ import org.testcontainers.images.builder.ImageFromDockerfile;
  * Is required for OpenLiberty but also used for the other runtimes as MountableFile with .withCopyToContainer() and
  * TestExecutionExceptionHandler don't go well together (Broken pipe when previous run failed)
  */
-public class DockerImageProcessor {
+public final class DockerImageProcessor {
+
+    private DockerImageProcessor() {
+    }
+
     public static ImageFromDockerfile getImage(SupportedRuntime supportedRuntime, ContainerAdapterMetaData metaData, TestContext testContext) {
         String version = System.getProperty("be.atbash.test.runtime.version", "");
         DockerImageProducer producer = retrieveProducer(supportedRuntime);

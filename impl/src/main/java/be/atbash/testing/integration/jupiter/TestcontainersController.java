@@ -139,7 +139,7 @@ public class TestcontainersController {
 
         long start = System.currentTimeMillis();
         startContainers();
-        LOGGER.info("All containers started in " + (System.currentTimeMillis() - start) + "ms");
+        LOGGER.info(String.format("All containers started in %s ms" ,  System.currentTimeMillis() - start));
     }
 
     protected void startContainers() {
