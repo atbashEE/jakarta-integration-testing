@@ -38,13 +38,13 @@ public abstract class AbstractIntegrationContainer<SELF extends AbstractIntegrat
 
     private final boolean liveLogging;
 
-    public AbstractIntegrationContainer(Future<String> image, boolean liveLogging) {
+    protected AbstractIntegrationContainer(Future<String> image, boolean liveLogging) {
         super(image);
         this.liveLogging = liveLogging;
         setNetwork(Network.SHARED);
     }
 
-    public AbstractIntegrationContainer(DockerImageName dockerImageName) {
+    protected AbstractIntegrationContainer(DockerImageName dockerImageName) {
         // FIXME Is this constructor still needed. Since child constructors aren't used.
         super(dockerImageName);
         this.liveLogging = false;

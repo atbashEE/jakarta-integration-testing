@@ -27,6 +27,9 @@ import java.util.ServiceLoader;
 
 public final class JDBCDriverFileUtil {
 
+    private JDBCDriverFileUtil() {
+    }
+
     public static String getDriverFile(TestContext testContext) {
         DatabaseContainerAdapterMetaData databaseMetaData = testContext.getInstance(DatabaseContainerAdapterMetaData.class);
 

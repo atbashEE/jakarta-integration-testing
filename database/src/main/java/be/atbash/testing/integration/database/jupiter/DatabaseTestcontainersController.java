@@ -18,6 +18,8 @@ package be.atbash.testing.integration.database.jupiter;
 import be.atbash.testing.integration.container.AbstractIntegrationContainer;
 import be.atbash.testing.integration.container.exception.UnexpectedException;
 import be.atbash.testing.integration.container.image.TestContext;
+import be.atbash.testing.integration.database.exception.DataScriptException;
+import be.atbash.testing.integration.database.exception.DatabaseScriptException;
 import be.atbash.testing.integration.database.exception.FileNotFoundException;
 import be.atbash.testing.integration.jupiter.ContainerAdapterMetaData;
 import be.atbash.testing.integration.jupiter.TestcontainersController;
@@ -98,14 +100,7 @@ public class DatabaseTestcontainersController extends TestcontainersController {
             manageStartDatabaseContainer(startSignal, failure);
 
             startContainers();
-            try {
-                boolean containerStarted = startSignal.await(1, TimeUnit.MINUTES);
-                if (!containerStarted) {
-                    throw new AssertionError("Test aborted since Database container does not start within a reasonable time");
-                }
-            } catch (InterruptedException e) {
-                throw new UnexpectedException("Database Container start interrupted", e);
-            }
+            awaitStartup(startSignal);
 
             // We can only access the Database container after it is started.
             // But this start() s part of beforeAll and thus before PostProcessTestInstance needs it.
@@ -119,7 +114,18 @@ public class DatabaseTestcontainersController extends TestcontainersController {
             throw new AssertionError("Test aborted");
         }
 
-        LOGGER.info("All containers started in " + (System.currentTimeMillis() - start) + "ms");
+        LOGGER.info(String.format("All containers started in %s ms", System.currentTimeMillis() - start));
+    }
+
+    private static void awaitStartup(CountDownLatch startSignal) {
+        try {
+            boolean containerStarted = startSignal.await(1, TimeUnit.MINUTES);
+            if (!containerStarted) {
+                throw new AssertionError("Test aborted since Database container does not start within a reasonable time");
+            }
+        } catch (InterruptedException e) {
+            throw new UnexpectedException("Database Container start interrupted", e);
+        }
     }
 
     public void injectInstances(Object testInstance) {
@@ -131,7 +137,7 @@ public class DatabaseTestcontainersController extends TestcontainersController {
             databaseContainerField = testClass.getField("databaseContainer");
             databaseContainerField.set(null, jdbcDatabaseContainer);
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new UnexpectedException("Unexpected exception happened during injection of istances in database test fields", e);
         }
     }
 
@@ -159,7 +165,7 @@ public class DatabaseTestcontainersController extends TestcontainersController {
 
                 ScriptUtils.executeDatabaseScript(delegate, createTables, script);
             } catch (ScriptException e) {
-                throw new RuntimeException(e);
+                throw new DatabaseScriptException("failure during execution of script : " + script, e);
             }
 
             String dataFile = databaseContainerMetaData.getDatabaseContainerIntegrationTest().databaseScriptFiles().initData();
@@ -168,13 +174,9 @@ public class DatabaseTestcontainersController extends TestcontainersController {
                 throw new FileNotFoundException(String.format("The file with name '%s' is not found on the class path", dataFile));
             }
 
-            try {
-                dataSet = new XlsDataSet(Paths.get(testDataFile.toURI()).toFile());
-            } catch (IOException | DataSetException | URISyntaxException e) {
-                throw new RuntimeException(e);
-            }
+            createDataSet(testDataFile);
 
-        } catch (Throwable e) {
+        } catch (Throwable e) {  // We really want to have all exceptions captured here for proper Thread handling.
             // Report to the calling context that there was a problem.
             // Since this method can be executed in a Thread, throwing an Exception is not enough.
             callback.failed();
@@ -185,13 +187,21 @@ public class DatabaseTestcontainersController extends TestcontainersController {
         }
     }
 
+    private void createDataSet(URL testDataFile) {
+        try {
+            dataSet = new XlsDataSet(Paths.get(testDataFile.toURI()).toFile());
+        } catch (IOException | DataSetException | URISyntaxException e) {
+            throw new UnexpectedException("Unexpected exception happened during creation of Dataset from " + testDataFile, e);
+        }
+    }
+
     public void uploadData() {
         try {
 
             DatabaseOperation.CLEAN_INSERT.execute(connection, dataSet);
 
         } catch (DatabaseUnitException | SQLException e) {
-            throw new RuntimeException(e);
+            throw new DataScriptException("Exception during execution of data insert", e);
         }
     }
 
@@ -221,11 +231,13 @@ public class DatabaseTestcontainersController extends TestcontainersController {
             DatabaseOperation.DELETE_ALL.execute(connection, dataSet);
 
         } catch (DatabaseUnitException | SQLException e) {
-            throw new RuntimeException(e);
+            throw new DataScriptException("Exception during execution of data delete", e);
+
         }
 
     }
 
+    @Override
     public void stopContainers() throws IllegalAccessException {
         super.stopContainers();
 

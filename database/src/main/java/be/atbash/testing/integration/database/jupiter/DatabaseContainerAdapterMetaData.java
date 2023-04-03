@@ -62,7 +62,7 @@ public class DatabaseContainerAdapterMetaData {
         try {
             result = Class.forName(className);
         } catch (ClassNotFoundException e) {
-            ; // Just a test, lets continue
+            // Just a test, lets continue
         }
         return result;
     }

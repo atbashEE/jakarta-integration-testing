@@ -16,7 +16,6 @@
 package be.atbash.test.integration.example.hello;
 
 import be.atbash.testing.integration.database.jupiter.DatabaseContainerIntegrationTest;
-import be.atbash.testing.integration.database.jupiter.DatabaseScriptFiles;
 import be.atbash.testing.integration.database.test.AbstractDatabaseContainerIntegrationTest;
 import be.atbash.testing.integration.jupiter.ContainerIntegrationTest;
 import be.atbash.testing.integration.jupiter.SupportedRuntime;
