@@ -1,7 +1,7 @@
 :doctype: book
 = Integration testing for Jakarta EE
 Rudy De Busscher <rdebusscher@gmail.com>
-v1.2.0, ??/??/2023
+v1.2.0, 03/04/2023
 
 == Release notes
 
@@ -50,7 +50,7 @@ To get started, at this dependency to your project
     <dependency>
         <groupId>be.atbash.test</groupId>
         <artifactId>integration-testing</artifactId>
-        <version>1.1.0</version>
+        <version>1.2.0</version>
         <scope>test</scope>
     </dependency>
 ----
@@ -517,4 +517,4 @@ As indicated, the current version of the test framework runs runtime versions of
 
 But since the only _connection_ between the test and the endpoints of your application within the container is HTTP based, there is no requirement on the application that can be tested.
 
-When you define the version/tag name of the container that is started your application can make use of Jakarta EE 9.x, Jakarta EE 10, and run on any JDK that is supported by the runtime. So it is easy to use this framework with the upcoming Jakarta EE 10 release.
+There is a dedicated version 2.2.0 of the Testing Framework for when you are using the jakarta namespace.
