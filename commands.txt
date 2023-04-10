@@ -26,4 +26,8 @@ mvn license:format
 
 # Setting versions
 
-mvn versions:set -DnewVersion=2.2.0-SNAPSHOT -DgenerateBackupPoms=false
+mvn versions:set -DnewVersion=2.2.0 -DgenerateBackupPoms=false
+
+# release
+
+mvn clean deploy -Prelease

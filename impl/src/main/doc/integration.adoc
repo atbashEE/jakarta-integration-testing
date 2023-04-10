@@ -1,14 +1,15 @@
 :doctype: book
 = Integration testing for Jakarta EE
 Rudy De Busscher <rdebusscher@gmail.com>
-v2.2.0, ??/??/2023
+v2.2.0, 10/04/2023
 
 == Release notes
 
 === 2.2.0
 
-. Jakarta EE 10 based.
+. Jakarta EE 10 based of version 1.2.0
 . Dropped Support for Glassfish (as there is no Docker image available in public repository).
+. OpenLiberty support is not available as there is no Jakarta EE 10 version available. Should be available soon.
 
 === 1.2.0
 
@@ -44,7 +45,6 @@ This integration testing framework is designed to work with Jakarta Runtimes, Ja
 - Payara Micro - https://www.payara.fish/[website]
 - OpenLiberty - https://openliberty.io/[website]
 - Wildfly - https://www.wildfly.org/[website]
-- Glassfish - No useable Docker image available on dockerHub.
 
 == Configuration
 
@@ -55,7 +55,7 @@ To get started, at this dependency to your project
     <dependency>
         <groupId>be.atbash.test</groupId>
         <artifactId>integration-testing</artifactId>
-        <version>1.1.0</version>
+        <version>2.2.0</version>
         <scope>test</scope>
     </dependency>
 ----
@@ -185,14 +185,6 @@ ADD test.war /config/apps
 [source]
 ----
 ADD test.war /opt/jboss/wildfly/standalone/deployments
-----
-
-=== Glassfish
-
-[source]
-----
-ADD test.war ${DEPLOYMENT_DIR}
-----
 
 == Adapter for Docker Build scripts (v1.2.0)
 
@@ -397,7 +389,7 @@ class ApplicationTest extends AbstractContainerIntegrationTest {
 }
 ----
 
-You can use the classes `PayaraMicroContainer`, `OpenLibertyContainer`, 'WildflyContainer', and `GlassfishContainer` to run an additional image but already apply some logic to the container.
+You can use the classes `PayaraMicroContainer`, `OpenLibertyContainer`, and 'WildflyContainer' to run an additional image but already apply some logic to the container.
 
 - The container shares the same network as the container running your application under test.
 - The health check is automatically applied to the container and thus your test will not start until container reports itself as healthy.
@@ -429,21 +421,13 @@ project
 
 == Jakarta runtime specifics
 
-The current version of the framework is designed to work with any Jakarta EE 8 compatible runtime and the application is running with Java 11.  For a few runtimes, there are some specific additional requirements or limitations.
+This version of the framework is designed to work with any Jakarta EE 10 compatible runtime and the application is running with Java 11.  For a few runtimes, there are some specific additional requirements or limitations.
 
 === OpenLiberty
 
 The Docker images for OpenLiberty require that you supply a _server.xml_ file to configure the process.  The testing framework expects this file within the _src/main/liberty/config_ directory (the standard location when using the liberty tooling.)  For more information on this file, look at https://openliberty.io/docs/latest/reference/config/server-configuration-overview.html[OpenLiberty documentation] page and the examples in this repository also have a minimal example.
 
 Important here is the element `webApplication` that makes sure the application under test is deployed on the root.
-
-== Glassfish
-
-Since there is no official Glassfish Docker image available, the framework uses the image that is created by https://github.com/AdamBien/docklands[Adam Bien, the Docklands images].
-
-However, this image runs on Java 8 and has no support for remote debugging.  So consider the support for Glassfish as very limited for the moment due to the lack of an official Docker Image for it.
-
-As of version 1.1.0, you can make use of the custom Docker build file to overcome this problem by providing your own script.
 
 == Remote Debug
 
