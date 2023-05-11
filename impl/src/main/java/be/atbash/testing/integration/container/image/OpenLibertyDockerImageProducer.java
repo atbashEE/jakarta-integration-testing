@@ -29,8 +29,7 @@ public class OpenLibertyDockerImageProducer extends DockerImageProducer {
 
     @Override
     public ImageFromDockerfile getImage(ContainerAdapterMetaData metaData, String version, TestContext testContext) {
-        // FIXME We need the Docker image for the Jakarta EE 10 version which is not yet available.
-        String fromImage = defineFromImageName("openliberty/open-liberty", version, "22.0.0.10-full-java11-openj9-ubi");
+        String fromImage = defineFromImageName("icr.io/appcafe/open-liberty", version, "23.0.0.4-full-java11-openj9-ubi");
         String dockerFileContent = postProcessDockerFileContent(defineDockerfileContent(fromImage, metaData.getCustomBuildDirectory()), SupportedRuntime.OPEN_LIBERTY, testContext);
 
         try {

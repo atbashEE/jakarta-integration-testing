@@ -44,8 +44,8 @@ public final class DockerImageProcessor {
                 result = new PayaraMicroDockerImageProducer();
                 break;
             case OPEN_LIBERTY:
-                //result = new OpenLibertyDockerImageProducer();
-                throw new IllegalArgumentException("OpenLiberty is not yet supported"); // FIXME
+                result = new OpenLibertyDockerImageProducer();
+                break;
 
             case WILDFLY:
                 result = new WildFlyDockerImageProducer();
